@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles } from 'lucide-react';
+import { Send, Sparkles, User, ChevronRight, Clock } from 'lucide-react';
 import apiClient from '@/lib/api/client';
 import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -30,7 +31,7 @@ export default function AssistantPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Bonjour ! Je suis Jam, ton assistant IA. Comment puis-je t\'aider aujourd\'hui ? 🦁',
+      content: "Bonjour ! Je suis Jam, ton assistant IA. Comment puis-je t'aider aujourd'hui ? 🦁\n\nJe peux t'aider à :\n• Trouver du contenu adapté à tes objectifs\n• Résumer des vidéos ou articles\n• Répondre à tes questions sur les soft skills",
     },
   ]);
   const [input, setInput] = useState('');
@@ -38,6 +39,7 @@ export default function AssistantPage() {
   const [recommendedContents, setRecommendedContents] = useState<RecommendedContent[]>([]);
   const [quickPrompts, setQuickPrompts] = useState<QuickPrompt[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     apiClient
@@ -61,7 +63,7 @@ export default function AssistantPage() {
 
     try {
       const res = await apiClient.post('/ai/chat', {
-        messages: newMessages.filter((m) => m.role !== 'assistant' || newMessages.indexOf(m) > 0),
+        messages: newMessages.filter((m, i) => m.role !== 'assistant' || i > 0),
       });
       const { reply, recommendedContents: recs } = res.data.data;
       setMessages([...newMessages, { role: 'assistant', content: reply }]);
@@ -71,128 +73,206 @@ export default function AssistantPage() {
         ...newMessages,
         {
           role: 'assistant',
-          content: 'Désolé, je ne peux pas répondre pour l\'instant. Réessaie dans un moment.',
+          content: "Désolé, je ne peux pas répondre pour l'instant. Réessaie dans un moment.",
         },
       ]);
     } finally {
       setLoading(false);
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
     }
   };
 
   return (
-    <div className="flex flex-col h-screen pb-20 bg-dark-bg">
-      {/* Header */}
-      <div className="px-4 pt-6 pb-3 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-brand-orange/20 rounded-xl flex items-center justify-center">
-            <Sparkles size={20} className="text-brand-orange" />
+    <div className="flex h-full overflow-hidden">
+      {/* ── Chat area ── */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center gap-3 px-4 md:px-6 py-3 border-b border-dark-border flex-shrink-0 bg-dark-bg/80 backdrop-blur">
+          <div className="w-9 h-9 bg-brand-orange/20 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Sparkles size={18} className="text-brand-orange" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="font-bold text-white">Assistant IA</h1>
-            <p className="text-xs text-brand-green">● En ligne</p>
+            <h1 className="font-bold text-white text-sm">Jam — Assistant IA</h1>
+            <p className="text-[11px] text-brand-green flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-brand-green rounded-full inline-block" aria-hidden="true" />
+              En ligne
+            </p>
+          </div>
+          <div className="ml-auto text-xs text-dark-text hidden md:block">
+            <span className="kbd">↵</span> Envoyer &nbsp; <span className="kbd">⇧↵</span> Nouvelle ligne
           </div>
         </div>
-      </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-        {messages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div
-              className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                msg.role === 'user'
-                  ? 'bg-brand-orange text-white rounded-br-sm'
-                  : 'glass text-white rounded-bl-sm'
-              }`}
-            >
-              {msg.content}
-            </div>
-          </div>
-        ))}
-
-        {loading && (
-          <div className="flex justify-start">
-            <div className="glass px-4 py-3 rounded-2xl rounded-bl-sm">
-              <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className="w-2 h-2 bg-brand-orange rounded-full animate-bounce"
-                    style={{ animationDelay: `${i * 0.15}s` }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Recommended content cards */}
-        {recommendedContents.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs text-dark-text">Contenus recommandés pour toi :</p>
-            {recommendedContents.map((content) => (
+        {/* Quick prompts (desktop chips above messages) */}
+        {quickPrompts.length > 0 && messages.length <= 1 && (
+          <div className="hidden md:flex gap-2 px-6 py-3 border-b border-dark-border overflow-x-auto flex-shrink-0">
+            {quickPrompts.map((p) => (
               <button
-                key={content.id}
-                onClick={() => router.push(`/content/${content.id}`)}
-                className="w-full glass rounded-xl p-3 flex items-center gap-3 hover:border-brand-orange/30 transition-all text-left"
+                key={p.id}
+                onClick={() => sendMessage(p.message)}
+                className="flex items-center gap-1.5 bg-surface-2 hover:bg-surface-3 border border-dark-border text-white text-xs px-3 py-2 rounded-full whitespace-nowrap transition-all hover:border-brand-orange/30 flex-shrink-0"
               >
-                <div className="w-12 h-12 bg-brand-orange/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg">📹</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white line-clamp-1">{content.title}</p>
-                  <p className="text-xs text-dark-text mt-0.5">
-                    {content.durationSeconds
-                      ? `${Math.ceil(content.durationSeconds / 60)} min`
-                      : content.type}
-                  </p>
-                </div>
-                <span className="text-brand-orange text-xs flex-shrink-0">Voir →</span>
+                <Sparkles size={10} className="text-brand-orange" aria-hidden="true" />
+                {p.label}
               </button>
             ))}
           </div>
         )}
 
-        <div ref={bottomRef} />
-      </div>
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 space-y-4" aria-live="polite" aria-label="Conversation">
+          {messages.map((msg, i) => (
+            <div
+              key={i}
+              className={clsx('flex gap-3', msg.role === 'user' ? 'justify-end' : 'justify-start')}
+            >
+              {msg.role === 'assistant' && (
+                <div className="w-7 h-7 bg-brand-orange/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <Sparkles size={13} className="text-brand-orange" aria-hidden="true" />
+                </div>
+              )}
+              <div
+                className={clsx(
+                  'max-w-[80%] md:max-w-[65%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap',
+                  msg.role === 'user'
+                    ? 'bg-brand-orange text-white rounded-br-sm'
+                    : 'bg-surface-2 border border-dark-border text-white rounded-bl-sm',
+                )}
+              >
+                {msg.content}
+              </div>
+              {msg.role === 'user' && (
+                <div className="w-7 h-7 bg-surface-3 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <User size={13} className="text-dark-text" aria-hidden="true" />
+                </div>
+              )}
+            </div>
+          ))}
 
-      {/* Quick prompts */}
-      {messages.length <= 1 && quickPrompts.length > 0 && (
-        <div className="px-4 pb-2">
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {/* Typing indicator */}
+          {loading && (
+            <div className="flex gap-3 justify-start">
+              <div className="w-7 h-7 bg-brand-orange/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Sparkles size={13} className="text-brand-orange" />
+              </div>
+              <div className="bg-surface-2 border border-dark-border px-4 py-3 rounded-2xl rounded-bl-sm">
+                <div className="flex gap-1.5 items-center">
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="w-2 h-2 bg-brand-orange rounded-full animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div ref={bottomRef} />
+        </div>
+
+        {/* Mobile quick prompts */}
+        {quickPrompts.length > 0 && messages.length <= 1 && (
+          <div className="md:hidden flex gap-2 px-4 pb-2 overflow-x-auto flex-shrink-0">
             {quickPrompts.map((p) => (
               <button
                 key={p.id}
                 onClick={() => sendMessage(p.message)}
-                className="glass text-white text-xs px-3 py-2 rounded-full whitespace-nowrap hover:border-brand-orange/50 transition-all flex-shrink-0"
+                className="bg-surface-2 border border-dark-border text-white text-xs px-3 py-2 rounded-full whitespace-nowrap flex-shrink-0"
               >
                 {p.label}
               </button>
             ))}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Input */}
-      <div className="px-4 pb-4">
-        <div className="flex items-center gap-3 glass rounded-2xl px-4 py-3">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage(input)}
-            placeholder="Pose ta question..."
-            className="flex-1 bg-transparent text-white placeholder-dark-text text-sm focus:outline-none"
-            disabled={loading}
-          />
-          <button
-            onClick={() => sendMessage(input)}
-            disabled={!input.trim() || loading}
-            className="text-brand-orange disabled:opacity-40 transition-opacity"
-          >
-            <Send size={20} />
-          </button>
+        {/* Input */}
+        <div className="px-4 md:px-6 pb-4 md:pb-5 flex-shrink-0">
+          <div className="flex items-end gap-3 bg-surface-2 border border-dark-border rounded-2xl px-4 py-3 focus-within:border-brand-orange/50 transition-colors">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Pose ta question à Jam..."
+              className="flex-1 bg-transparent text-white placeholder-dark-text text-sm focus:outline-none resize-none max-h-32 min-h-[24px]"
+              disabled={loading}
+              rows={1}
+              aria-label="Message à envoyer"
+            />
+            <button
+              onClick={() => sendMessage(input)}
+              disabled={!input.trim() || loading}
+              className="text-brand-orange disabled:opacity-40 transition-opacity p-0.5 flex-shrink-0"
+              aria-label="Envoyer le message"
+            >
+              <Send size={18} />
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* ── Right panel: recommended contents ── */}
+      {recommendedContents.length > 0 && (
+        <aside
+          className="hidden lg:flex flex-col w-72 xl:w-80 border-l border-dark-border animate-slide-in-right overflow-hidden"
+          aria-label="Contenus recommandés"
+        >
+          <div className="px-4 py-3 border-b border-dark-border flex-shrink-0">
+            <p className="text-xs font-semibold text-white uppercase tracking-wide">
+              Contenus recommandés
+            </p>
+            <p className="text-[10px] text-dark-text mt-0.5">
+              Basé sur ta conversation
+            </p>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            {recommendedContents.map((content) => (
+              <button
+                key={content.id}
+                onClick={() => router.push(`/content/${content.id}`)}
+                className="w-full flex items-center gap-3 card card-interactive p-3 text-left group"
+              >
+                <div className="w-10 h-10 bg-brand-orange/15 rounded-lg flex items-center justify-center flex-shrink-0">
+                  {content.thumbnailUrl ? (
+                    <img
+                      src={content.thumbnailUrl}
+                      alt=""
+                      className="w-full h-full object-cover rounded-lg"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <Sparkles size={16} className="text-brand-orange" aria-hidden="true" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-white line-clamp-2 group-hover:text-brand-orange transition-colors">
+                    {content.title}
+                  </p>
+                  <p className="text-[10px] text-dark-text mt-0.5 flex items-center gap-1">
+                    {content.durationSeconds ? (
+                      <>
+                        <Clock size={9} /> {Math.ceil(content.durationSeconds / 60)} min
+                      </>
+                    ) : (
+                      content.type
+                    )}
+                  </p>
+                </div>
+                <ChevronRight size={12} className="text-dark-text flex-shrink-0" aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+        </aside>
+      )}
     </div>
   );
 }

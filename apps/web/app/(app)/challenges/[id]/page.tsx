@@ -1,15 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { challengesApi } from '@/lib/api/content.api';
-import { ArrowLeft, CheckCircle, Lock, Flame } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Lock, Flame, Star, Zap, Trophy } from 'lucide-react';
+import { useRightPanelStore } from '@/store/rightPanel.store';
+import { Skeleton } from '@/components/ui/SkeletonLoader';
+import { EmptyState } from '@/components/ui/EmptyState';
+import clsx from 'clsx';
 
 export default function ChallengeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const setPanel = useRightPanelStore((s) => s.setContent);
+
   const [reflection, setReflection] = useState('');
   const [showValidateModal, setShowValidateModal] = useState(false);
   const [validatingDay, setValidatingDay] = useState<number | null>(null);
@@ -38,19 +44,48 @@ export default function ChallengeDetailPage() {
     },
   });
 
+  // Push challenge du jour to right panel
+  useEffect(() => {
+    if (!challenge) return;
+    const userProgress = challenge.userProgress;
+    const currentDay = userProgress?.currentDay ?? 1;
+    const currentDayData = challenge.days?.find((d: any) => d.dayNumber === currentDay);
+    if (userProgress?.status === 'IN_PROGRESS' && currentDayData) {
+      setPanel({
+        challengeId: id,
+        challengeDay: {
+          dayNumber: currentDay,
+          total: challenge.durationDays ?? 7,
+          title: currentDayData.title ?? `Mission du jour ${currentDay}`,
+          xpReward: currentDayData.xpReward ?? 30,
+        },
+      });
+    } else {
+      setPanel({ challengeId: id, challengeDay: null });
+    }
+  }, [challenge, id, setPanel]);
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-brand-orange">Chargement...</div>
+      <div className="p-4 md:p-6 space-y-4 max-w-2xl mx-auto">
+        <Skeleton className="h-6 w-1/2" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+        {Array.from({ length: 7 }).map((_, i) => (
+          <Skeleton key={i} className="h-16 w-full rounded-xl" />
+        ))}
       </div>
     );
   }
 
   if (!challenge) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-dark-text">Challenge non trouvé.</p>
-      </div>
+      <EmptyState
+        icon={Zap}
+        title="Challenge non trouvé"
+        description="Ce challenge n'existe pas ou a été supprimé."
+        action={{ label: 'Retour aux challenges', onClick: () => router.push('/challenges') }}
+        className="h-full"
+      />
     );
   }
 
@@ -58,14 +93,14 @@ export default function ChallengeDetailPage() {
   const isJoined = !!userProgress;
   const currentDay = userProgress?.currentDay ?? 0;
   const isCompleted = userProgress?.status === 'COMPLETED';
-  const days = Array.from({ length: 7 }, (_, i) => i + 1);
+  const days = Array.from({ length: challenge.durationDays ?? 7 }, (_, i) => i + 1);
 
   const handleValidate = (dayNumber: number) => {
     setValidatingDay(dayNumber);
     setShowValidateModal(true);
   };
 
-  const getDayStatus = (dayNum: number) => {
+  const getDayStatus = (dayNum: number): 'completed' | 'current' | 'locked' => {
     if (!isJoined) return 'locked';
     if (dayNum < currentDay) return 'completed';
     if (dayNum === currentDay) return 'current';
@@ -73,107 +108,190 @@ export default function ChallengeDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg pb-24">
+    <div className="pb-24 md:pb-8 max-w-2xl mx-auto">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-dark-bg/80 backdrop-blur px-4 py-3 flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-white">
-          <ArrowLeft size={24} />
+      <div className="sticky top-0 z-10 bg-dark-bg/90 backdrop-blur px-4 md:px-6 py-3 flex items-center gap-3 border-b border-dark-border md:border-transparent">
+        <button
+          onClick={() => router.push('/challenges')}
+          className="text-dark-text hover:text-white transition-colors"
+          aria-label="Retour aux challenges"
+        >
+          <ArrowLeft size={20} />
         </button>
-        <h1 className="text-white font-semibold flex-1 line-clamp-1">{challenge.title}</h1>
+        <h1 className="text-white font-semibold flex-1 line-clamp-1 text-sm md:text-base">
+          {challenge.title}
+        </h1>
+        {isCompleted && (
+          <span className="flex items-center gap-1 text-brand-green text-xs font-semibold">
+            <CheckCircle size={14} /> Terminé
+          </span>
+        )}
+        {isJoined && !isCompleted && (
+          <span className="flex items-center gap-1 text-brand-orange text-xs font-semibold">
+            <Flame size={14} /> J{currentDay}/7
+          </span>
+        )}
       </div>
 
-      <div className="px-4 pt-4 space-y-6">
-        {/* Hero */}
-        <div className="glass rounded-2xl p-6 text-center">
-          <div className="text-4xl mb-3">🏆</div>
-          <h2 className="text-xl font-bold text-white mb-2">{challenge.title}</h2>
-          <p className="text-dark-text text-sm mb-4">{challenge.description}</p>
+      <div className="px-4 md:px-6 pt-4 space-y-5">
+        {/* Hero card */}
+        <div className="card p-5">
+          <div className="flex items-start gap-4">
+            <div className="w-14 h-14 bg-brand-orange/15 rounded-2xl flex items-center justify-center flex-shrink-0">
+              {isCompleted ? (
+                <Trophy size={26} className="text-brand-gold" />
+              ) : (
+                <Zap size={26} className="text-brand-orange" />
+              )}
+            </div>
+            <div className="flex-1">
+              <h2 className="text-lg font-bold text-white mb-1">{challenge.title}</h2>
+              {challenge.description && (
+                <p className="text-dark-text text-sm leading-relaxed">{challenge.description}</p>
+              )}
+            </div>
+          </div>
 
-          {isCompleted && (
-            <div className="flex items-center justify-center gap-2 text-green-400 mb-4">
-              <CheckCircle size={20} />
-              <span className="font-medium">Challenge terminé!</span>
+          {/* Stats row */}
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-dark-border">
+            <div className="flex items-center gap-1.5 text-xs text-dark-text">
+              <Zap size={13} className="text-brand-orange" /> {challenge.durationDays ?? 7} jours
+            </div>
+            {challenge.badge && (
+              <div className="flex items-center gap-1.5 text-xs text-brand-gold">
+                <Trophy size={13} /> Badge : {challenge.badge.name}
+              </div>
+            )}
+            <div className="flex items-center gap-1.5 text-xs text-brand-gold ml-auto">
+              <Star size={13} /> +{(challenge.durationDays ?? 7) * 30 + 200} XP max
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          {isJoined && (
+            <div className="mt-3">
+              <div className="flex justify-between text-[10px] text-dark-text mb-1">
+                <span>Progression</span>
+                <span>{isCompleted ? 100 : Math.round(((currentDay - 1) / (challenge.durationDays ?? 7)) * 100)}%</span>
+              </div>
+              <div className="bg-surface-3 rounded-full h-1.5">
+                <div
+                  className={clsx('h-1.5 rounded-full xp-bar-fill', isCompleted ? 'bg-brand-green' : 'bg-brand-orange')}
+                  style={{
+                    width: isCompleted
+                      ? '100%'
+                      : `${((currentDay - 1) / (challenge.durationDays ?? 7)) * 100}%`,
+                  }}
+                />
+              </div>
             </div>
           )}
 
-          {isJoined && !isCompleted && (
-            <div className="flex items-center justify-center gap-2 text-brand-orange mb-4">
-              <Flame size={20} />
-              <span className="font-medium">Jour {currentDay} / 7</span>
-            </div>
-          )}
-
+          {/* CTA */}
           {!isJoined && (
             <button
               onClick={() => joinMutation.mutate()}
               disabled={joinMutation.isPending}
-              className="w-full bg-brand-orange text-white rounded-xl py-3 font-medium disabled:opacity-50"
+              className="w-full mt-4 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl py-3 font-semibold transition-colors disabled:opacity-50"
             >
               {joinMutation.isPending ? 'Inscription...' : 'Rejoindre le challenge'}
             </button>
           )}
         </div>
 
-        {/* 7-Day Timeline */}
+        {/* Timeline */}
         <div>
-          <h3 className="text-white font-semibold mb-4">Timeline J1–J7</h3>
-          <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-white uppercase tracking-wide mb-3">
+            Programme J1–J{challenge.durationDays ?? 7}
+          </h3>
+
+          <div className="space-y-2">
             {days.map((dayNum) => {
               const status = getDayStatus(dayNum);
               const dayData = challenge.days?.find((d: any) => d.dayNumber === dayNum);
               const validation = userProgress?.validations?.find((v: any) => v.dayNumber === dayNum);
 
               return (
-                <div key={dayNum} className="flex gap-4 items-start">
-                  {/* Timeline line */}
-                  <div className="flex flex-col items-center">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      status === 'completed'
-                        ? 'bg-green-500/20 border border-green-500'
-                        : status === 'current'
-                        ? 'bg-brand-orange/20 border border-brand-orange'
-                        : 'bg-white/5 border border-white/10'
-                    }`}>
+                <div key={dayNum} className="flex gap-3">
+                  {/* Timeline indicator */}
+                  <div className="flex flex-col items-center pt-3.5">
+                    <div
+                      className={clsx(
+                        'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border',
+                        status === 'completed'
+                          ? 'bg-brand-green/15 border-brand-green/40'
+                          : status === 'current'
+                          ? 'bg-brand-orange/15 border-brand-orange/60'
+                          : 'bg-surface-2 border-dark-border',
+                      )}
+                    >
                       {status === 'completed' ? (
-                        <CheckCircle size={18} className="text-green-500" />
+                        <CheckCircle size={15} className="text-brand-green" />
                       ) : status === 'current' ? (
-                        <span className="text-brand-orange font-bold text-sm">{dayNum}</span>
+                        <span className="text-brand-orange font-bold text-xs">{dayNum}</span>
                       ) : (
-                        <Lock size={16} className="text-dark-text" />
+                        <Lock size={13} className="text-dark-text" />
                       )}
                     </div>
-                    {dayNum < 7 && (
-                      <div className={`w-0.5 h-6 mt-1 ${
-                        status === 'completed' ? 'bg-green-500/40' : 'bg-white/10'
-                      }`} />
+                    {dayNum < days.length && (
+                      <div
+                        className={clsx(
+                          'w-px flex-1 min-h-[16px] mt-1',
+                          status === 'completed' ? 'bg-brand-green/30' : 'bg-dark-border',
+                        )}
+                      />
                     )}
                   </div>
 
-                  {/* Day content */}
-                  <div className={`flex-1 glass rounded-xl p-4 mb-2 ${
-                    status === 'current' ? 'border-brand-orange/30' : ''
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-white text-sm font-medium">
-                          Jour {dayNum}: {dayData?.title ?? `Mission du jour ${dayNum}`}
+                  {/* Day card */}
+                  <div
+                    className={clsx(
+                      'flex-1 card p-3.5 mb-2',
+                      status === 'current' && 'border-brand-orange/30 bg-brand-orange/5',
+                      status === 'locked' && 'opacity-60',
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <p
+                          className={clsx(
+                            'text-sm font-semibold',
+                            status === 'current' ? 'text-brand-orange' : 'text-white',
+                          )}
+                        >
+                          Jour {dayNum}{dayData?.title ? ` — ${dayData.title}` : ''}
                         </p>
                         {dayData?.description && (
-                          <p className="text-dark-text text-xs mt-1">{dayData.description}</p>
+                          <p className="text-xs text-dark-text mt-1 leading-relaxed">
+                            {dayData.description}
+                          </p>
                         )}
                         {validation?.reflection && (
-                          <p className="text-brand-orange/70 text-xs mt-1 italic">
-                            &quot;{validation.reflection}&quot;
+                          <p className="text-xs text-brand-orange/70 mt-1.5 italic bg-brand-orange/5 px-2 py-1 rounded-lg border border-brand-orange/10">
+                            &ldquo;{validation.reflection}&rdquo;
                           </p>
+                        )}
+                        {dayData?.xpReward && (
+                          <div className="flex items-center gap-1 mt-1.5">
+                            <Star size={10} className="text-brand-gold" />
+                            <span className="text-[10px] text-brand-gold font-medium">
+                              +{dayData.xpReward} XP
+                            </span>
+                          </div>
                         )}
                       </div>
                       {status === 'current' && !isCompleted && (
                         <button
                           onClick={() => handleValidate(dayNum)}
-                          className="text-xs bg-brand-orange text-white px-3 py-1.5 rounded-lg ml-2 flex-shrink-0"
+                          className="flex-shrink-0 bg-brand-orange hover:bg-brand-orange-dark text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
                         >
                           Valider
                         </button>
+                      )}
+                      {status === 'completed' && (
+                        <span className="flex-shrink-0 flex items-center gap-1 text-brand-green text-xs font-medium">
+                          <CheckCircle size={13} /> OK
+                        </span>
                       )}
                     </div>
                   </div>
@@ -184,12 +302,17 @@ export default function ChallengeDetailPage() {
         </div>
       </div>
 
-      {/* Validation Modal */}
+      {/* Validation modal */}
       {showValidateModal && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-end">
-          <div className="bg-dark-surface w-full rounded-t-2xl p-6">
-            <h3 className="text-white font-bold text-lg mb-2">
-              Valider Jour {validatingDay}
+        <div
+          className="fixed inset-0 bg-black/70 z-50 flex items-end md:items-center md:justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="validate-modal-title"
+        >
+          <div className="bg-surface-1 border border-dark-border w-full md:max-w-md rounded-t-2xl md:rounded-2xl p-6 shadow-modal">
+            <h3 id="validate-modal-title" className="text-white font-bold text-base mb-1">
+              Valider — Jour {validatingDay}
             </h3>
             <p className="text-dark-text text-sm mb-4">
               Partagez votre réflexion sur cette journée (optionnel).
@@ -198,8 +321,9 @@ export default function ChallengeDetailPage() {
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
               placeholder="Ce que j'ai appris aujourd'hui..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm resize-none outline-none focus:border-brand-orange/50 mb-4"
+              className="w-full bg-surface-2 border border-dark-border rounded-xl p-3 text-white text-sm resize-none focus:outline-none focus:border-brand-orange/50 transition-colors mb-4"
               rows={3}
+              autoFocus
             />
             <div className="flex gap-3">
               <button
@@ -208,21 +332,16 @@ export default function ChallengeDetailPage() {
                   setReflection('');
                   setValidatingDay(null);
                 }}
-                className="flex-1 border border-white/10 text-white rounded-xl py-3"
+                className="flex-1 border border-dark-border text-white rounded-xl py-3 text-sm font-medium hover:bg-surface-2 transition-colors"
               >
                 Annuler
               </button>
               <button
-                onClick={() =>
-                  validateMutation.mutate({
-                    dayNumber: validatingDay!,
-                    reflection: reflection || undefined,
-                  })
-                }
+                onClick={() => validateMutation.mutate({ dayNumber: validatingDay!, reflection: reflection || undefined })}
                 disabled={validateMutation.isPending}
-                className="flex-1 bg-brand-orange text-white rounded-xl py-3 font-medium disabled:opacity-50"
+                className="flex-1 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl py-3 text-sm font-semibold transition-colors disabled:opacity-50"
               >
-                {validateMutation.isPending ? 'Validation...' : 'Confirmer'}
+                {validateMutation.isPending ? 'Validation...' : 'Confirmer ✓'}
               </button>
             </div>
           </div>

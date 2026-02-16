@@ -3,22 +3,21 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api/client';
 import { useAuthStore } from '@/store/auth.store';
-import { LogOut, Settings, Crown, Flame, Star } from 'lucide-react';
+import { useGamificationStore } from '@/store/gamification.store';
+import {
+  LogOut, Crown, Flame, Star, Trophy, Shield,
+  CreditCard, BookOpen, Zap, TrendingUp,
+} from 'lucide-react';
 import { authApi } from '@/lib/api/auth.api';
 import { useRouter } from 'next/navigation';
+import { PageHeader } from '@/components/ui/PageHeader';
+import clsx from 'clsx';
 
-const LEVEL_COLORS: Record<string, string> = {
-  Starter: 'from-gray-400 to-gray-600',
-  Warrior: 'from-blue-400 to-blue-600',
-  Lion: 'from-amber-400 to-amber-600',
-  GOAT: 'from-brand-orange to-red-600',
-};
-
-const LEVEL_ICONS: Record<string, string> = {
-  Starter: '🌱',
-  Warrior: '⚔️',
-  Lion: '🦁',
-  GOAT: '🐐',
+const LEVEL_CONFIGS: Record<string, { gradient: string; icon: string }> = {
+  Starter: { gradient: 'from-gray-600 to-gray-800', icon: '🌱' },
+  Warrior: { gradient: 'from-blue-600 to-blue-900', icon: '⚔️' },
+  Lion: { gradient: 'from-amber-500 to-amber-800', icon: '🦁' },
+  GOAT: { gradient: 'from-orange-500 to-red-700', icon: '🐐' },
 };
 
 export default function ProfilePage() {
@@ -30,15 +29,9 @@ export default function ProfilePage() {
     queryKey: ['gamification'],
     queryFn: async () => {
       const res = await apiClient.get('/gamification/profile');
-      return res.data.data;
-    },
-  });
-
-  const { data: stats } = useQuery({
-    queryKey: ['user-stats'],
-    queryFn: async () => {
-      const res = await apiClient.get('/users/me');
-      return res.data.data;
+      const data = res.data.data;
+      useGamificationStore.getState().setProfile(data);
+      return data;
     },
   });
 
@@ -49,119 +42,157 @@ export default function ProfilePage() {
   };
 
   const level = gamification?.currentLevel ?? 'Starter';
-  const xpPercent = gamification?.xpToNextLevel
-    ? Math.min(
-        ((gamification.totalXp - (gamification.xpInCurrentLevel ?? 0)) /
-          (gamification.xpToNextLevel + (gamification.totalXp - (gamification.xpInCurrentLevel ?? 0)))) *
-          100,
-        100,
-      )
-    : 100;
+  const cfg = LEVEL_CONFIGS[level] ?? LEVEL_CONFIGS.Starter;
+  const xpTotal = gamification?.totalXp ?? 0;
+  const xpToNext = gamification?.xpToNextLevel ?? 0;
+  const xpPercent = xpToNext > 0 ? Math.min((xpTotal / (xpTotal + xpToNext)) * 100, 100) : 100;
+
+  const displayName = user?.profile?.firstName
+    ? `${user.profile.firstName} ${user.profile.lastName ?? ''}`.trim()
+    : user?.email ?? '';
 
   return (
-    <div className="pb-24 max-w-lg mx-auto">
-      {/* Header */}
-      <div className={`bg-gradient-to-b ${LEVEL_COLORS[level] ?? LEVEL_COLORS.Starter} p-6 pt-10`}>
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">
-              {LEVEL_ICONS[level] ?? '🌱'}
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-white">
-                {user?.profile?.firstName} {user?.profile?.lastName}
-              </h1>
-              <p className="text-white/70 text-sm">{user?.email}</p>
-              <span className="inline-block bg-white/20 text-white text-xs px-2 py-0.5 rounded-full mt-1 font-semibold">
-                {level}
-              </span>
-            </div>
-          </div>
-          <button onClick={handleLogout} className="p-2 text-white/70 hover:text-white">
-            <LogOut size={20} />
+    <div className="p-4 md:p-6 pb-24 md:pb-8 max-w-content-area mx-auto">
+      <PageHeader
+        title="Mon Profil"
+        description="Tes statistiques, badges et progression."
+        icon={Shield}
+        actions={
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 bg-surface-2 border border-dark-border hover:border-red-500/30 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <LogOut size={14} />
+            <span className="hidden sm:block">Déconnexion</span>
           </button>
-        </div>
+        }
+      />
 
-        {/* XP Bar */}
-        <div className="mt-4">
-          <div className="flex justify-between text-white/80 text-xs mb-1">
-            <span>{gamification?.totalXp ?? 0} XP</span>
-            {gamification?.xpToNextLevel > 0 && (
-              <span>+{gamification.xpToNextLevel} XP pour le prochain niveau</span>
-            )}
+      {/* ── Hero card ── */}
+      <div className="card overflow-hidden mb-5">
+        <div className={clsx('h-20 bg-gradient-to-r pattern-bg', cfg.gradient)} />
+        <div className="px-5 pb-5">
+          <div className="flex items-end justify-between -mt-8 mb-4">
+            <div className="w-16 h-16 bg-surface-2 rounded-2xl border-2 border-dark-card flex items-center justify-center text-2xl relative">
+              <span role="img" aria-label={`Niveau ${level}`}>{cfg.icon}</span>
+              <div className="absolute -bottom-1 -right-1 bg-brand-orange text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+                {level.toUpperCase()}
+              </div>
+            </div>
+            <button
+              onClick={() => router.push('/billing')}
+              className="flex items-center gap-1.5 bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-brand-gold/20 transition-colors"
+            >
+              <Crown size={12} /> Premium
+            </button>
           </div>
-          <div className="bg-white/20 rounded-full h-2">
-            <div
-              className="bg-white h-2 rounded-full xp-bar-fill"
-              style={{ width: `${xpPercent}%` }}
-            />
+
+          <h2 className="text-lg font-bold text-white">{displayName}</h2>
+          <p className="text-dark-text text-sm">{user?.email}</p>
+          {user?.profile?.jobTitle && (
+            <p className="text-dark-text text-xs mt-0.5">{user.profile.jobTitle}</p>
+          )}
+
+          <div className="mt-4">
+            <div className="flex justify-between text-xs mb-1.5">
+              <span className="text-dark-text font-medium">{xpTotal.toLocaleString()} XP</span>
+              {xpToNext > 0 && (
+                <span className="text-dark-text">+{xpToNext.toLocaleString()} XP prochain niveau</span>
+              )}
+            </div>
+            <div className="bg-surface-3 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-brand-orange to-brand-gold h-2 rounded-full xp-bar-fill"
+                style={{ width: `${xpPercent}%` }}
+                role="progressbar"
+                aria-valuenow={Math.round(xpPercent)}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Progression XP"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 px-4 py-4">
-        <div className="glass rounded-xl p-3 text-center">
-          <div className="flex items-center justify-center gap-1 text-brand-orange mb-1">
-            <Flame size={16} />
-            <span className="font-bold">{gamification?.currentStreak ?? 0}</span>
+      {/* ── Stats grid ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        {[
+          { icon: Flame, color: 'text-brand-orange', bg: 'bg-brand-orange/10', value: gamification?.currentStreak ?? 0, label: 'Streak actuel' },
+          { icon: Star, color: 'text-brand-gold', bg: 'bg-brand-gold/10', value: xpTotal.toLocaleString(), label: 'XP Total' },
+          { icon: Trophy, color: 'text-brand-green', bg: 'bg-brand-green/10', value: gamification?.badges?.length ?? 0, label: 'Badges' },
+          { icon: TrendingUp, color: 'text-blue-400', bg: 'bg-blue-400/10', value: gamification?.longestStreak ?? 0, label: 'Meilleure série' },
+        ].map(({ icon: Icon, color, bg, value, label }) => (
+          <div key={label} className="card p-4 flex flex-col items-center text-center">
+            <div className={clsx('w-9 h-9 rounded-xl flex items-center justify-center mb-2', bg)}>
+              <Icon size={18} className={color} aria-hidden="true" />
+            </div>
+            <p className="text-xl font-bold text-white">{value}</p>
+            <p className="text-[11px] text-dark-text mt-0.5">{label}</p>
           </div>
-          <p className="text-xs text-dark-text">Streak</p>
-        </div>
-        <div className="glass rounded-xl p-3 text-center">
-          <div className="flex items-center justify-center gap-1 text-brand-gold mb-1">
-            <Star size={16} />
-            <span className="font-bold">{gamification?.totalXp ?? 0}</span>
-          </div>
-          <p className="text-xs text-dark-text">XP Total</p>
-        </div>
-        <div className="glass rounded-xl p-3 text-center">
-          <div className="flex items-center justify-center gap-1 text-brand-orange mb-1">
-            <Crown size={16} />
-            <span className="font-bold">{gamification?.badges?.length ?? 0}</span>
-          </div>
-          <p className="text-xs text-dark-text">Badges</p>
-        </div>
+        ))}
       </div>
 
-      {/* Badges */}
+      {/* ── Badges ── */}
       {(gamification?.badges?.length ?? 0) > 0 && (
-        <div className="px-4 mb-4">
-          <h2 className="text-lg font-bold mb-3">Mes Badges</h2>
-          <div className="grid grid-cols-3 gap-3">
-            {(gamification?.badges ?? []).map((badge: { id: string; name: string; description: string; iconUrl?: string }) => (
-              <div key={badge.id} className="glass rounded-xl p-3 text-center">
-                <div className="w-10 h-10 bg-brand-gold/20 rounded-xl flex items-center justify-center mx-auto mb-2">
-                  <Crown size={20} className="text-brand-gold" />
+        <div className="card p-4 mb-5">
+          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+            <Trophy size={14} className="text-brand-gold" />
+            Mes Badges ({gamification!.badges.length})
+          </h3>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {gamification!.badges.map((badge: { id: string; name: string; description: string; iconUrl?: string }) => (
+              <div
+                key={badge.id}
+                className="flex flex-col items-center gap-1.5 p-2.5 bg-surface-2 rounded-xl border border-dark-border hover:border-brand-gold/30 transition-colors group"
+                title={badge.description}
+              >
+                <div className="w-10 h-10 bg-brand-gold/15 rounded-xl flex items-center justify-center">
+                  <Crown size={18} className="text-brand-gold" aria-hidden="true" />
                 </div>
-                <p className="text-xs font-medium text-white line-clamp-2">{badge.name}</p>
+                <p className="text-[10px] font-medium text-white text-center line-clamp-2 leading-tight">
+                  {badge.name}
+                </p>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Actions */}
-      <div className="px-4 space-y-3">
-        <button
-          onClick={() => router.push('/billing')}
-          className="w-full glass rounded-xl p-4 flex items-center justify-between hover:border-brand-orange/30 transition-all"
-        >
-          <div className="flex items-center gap-3">
-            <Crown size={20} className="text-brand-gold" />
-            <span className="font-medium">Abonnement Premium</span>
-          </div>
-          <span className="text-dark-text text-sm">→</span>
-        </button>
-
-        <button
-          onClick={handleLogout}
-          className="w-full glass rounded-xl p-4 flex items-center gap-3 text-red-400 hover:border-red-500/30 transition-all"
-        >
-          <LogOut size={20} />
-          <span>Se déconnecter</span>
-        </button>
+      {/* ── Quick actions ── */}
+      <div className="card p-4 mb-5">
+        <h3 className="text-sm font-semibold text-white mb-3">Actions rapides</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {[
+            { href: '/programs', icon: BookOpen, label: 'Mes Programmes', desc: 'Voir ta progression', color: 'text-brand-orange' },
+            { href: '/challenges', icon: Zap, label: 'Mes Challenges', desc: 'Challenges actifs', color: 'text-brand-gold' },
+            { href: '/saved', icon: Star, label: 'Contenus sauvegardés', desc: 'Ta liste de lecture', color: 'text-blue-400' },
+            { href: '/billing', icon: CreditCard, label: 'Abonnement Premium', desc: 'Gérer ton abonnement', color: 'text-brand-green' },
+          ].map(({ href, icon: Icon, label, desc, color }) => (
+            <button
+              key={href}
+              onClick={() => router.push(href)}
+              className="flex items-center gap-3 p-3 bg-surface-2 hover:bg-surface-3 border border-dark-border hover:border-white/20 rounded-xl transition-all text-left group"
+            >
+              <div className="w-9 h-9 bg-surface-3 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Icon size={16} className={color} aria-hidden="true" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white group-hover:text-brand-orange transition-colors">{label}</p>
+                <p className="text-[10px] text-dark-text mt-0.5">{desc}</p>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
+
+      <button
+        onClick={handleLogout}
+        className="w-full flex items-center justify-center gap-2 py-3 border border-red-500/20 text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-xl text-sm font-medium transition-colors"
+      >
+        <LogOut size={16} aria-hidden="true" />
+        Se déconnecter
+      </button>
     </div>
   );
 }

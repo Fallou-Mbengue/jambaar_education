@@ -21,6 +21,12 @@ const config: Config = {
           card: '#141414',
           border: '#1E1E1E',
           text: '#A0A0A0',
+          'card-hover': '#1a1a1a',
+        },
+        surface: {
+          1: '#111111',
+          2: '#161616',
+          3: '#1c1c1c',
         },
       },
       fontFamily: {
@@ -28,12 +34,36 @@ const config: Config = {
       },
       screens: {
         xs: '375px',
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1536px',
+      },
+      spacing: {
+        'sidebar': '240px',
+        'sidebar-compact': '64px',
+        'panel': '320px',
+        'topbar': '56px',
+      },
+      width: {
+        'sidebar': '240px',
+        'sidebar-compact': '64px',
+        'panel': '320px',
+      },
+      maxWidth: {
+        'feed-item': '480px',
+        'content-area': '860px',
       },
       animation: {
         'xp-gain': 'xpGain 0.5s ease-out',
         'level-up': 'levelUp 0.8s ease-out',
         'badge-earned': 'badgeEarned 0.6s ease-out',
         shimmer: 'shimmer 1.5s infinite',
+        'slide-in-right': 'slideInRight 0.2s ease-out',
+        'slide-in-left': 'slideInLeft 0.2s ease-out',
+        'fade-in': 'fadeIn 0.15s ease-out',
+        'panel-open': 'panelOpen 0.2s ease-out',
       },
       keyframes: {
         xpGain: {
@@ -54,6 +84,37 @@ const config: Config = {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
         },
+        slideInRight: {
+          '0%': { transform: 'translateX(16px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideInLeft: {
+          '0%': { transform: 'translateX(-16px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        panelOpen: {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+      },
+      boxShadow: {
+        'card': '0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3)',
+        'card-hover': '0 4px 12px rgba(0,0,0,0.5)',
+        'modal': '0 20px 60px rgba(0,0,0,0.7)',
+        'panel': '-4px 0 20px rgba(0,0,0,0.3)',
+        'sidebar': '4px 0 20px rgba(0,0,0,0.3)',
+      },
+      borderRadius: {
+        'card': '12px',
+        'card-lg': '16px',
+        'badge': '6px',
+      },
+      fontSize: {
+        'label': ['11px', { lineHeight: '16px', letterSpacing: '0.05em', fontWeight: '600' }],
       },
     },
   },

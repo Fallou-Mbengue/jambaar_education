@@ -1,5 +1,5 @@
-import { MobileShell } from '@/components/layout/MobileShell';
+import { WebShell } from '@/components/layout/WebShell';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  return <MobileShell>{children}</MobileShell>;
+  return <WebShell>{children}</WebShell>;
 }
