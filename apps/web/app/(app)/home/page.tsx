@@ -35,10 +35,10 @@ export default function HomePage() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
     queryKey: ['feed'],
     queryFn: async ({ pageParam }) => {
-      const res = await feedApi.getFeed(pageParam as string | undefined, 10);
+      const res = await feedApi.getFeed(pageParam, 10);
       return res.data.data;
     },
-    initialPageParam: undefined,
+    initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) =>
       (lastPage as { nextCursor?: string }).nextCursor,
   });

@@ -8,7 +8,7 @@ interface FeedCursor {
   id: string;
 }
 
-interface FeedContent {
+export interface FeedContent {
   id: string;
   title: string;
   description: string | null;

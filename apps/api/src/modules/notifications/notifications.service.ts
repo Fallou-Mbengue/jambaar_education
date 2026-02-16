@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 interface CreateNotificationPayload {
@@ -31,7 +32,7 @@ export class NotificationsService {
           title: payload.title,
           body: payload.body,
           deepLink: payload.deepLink,
-          metadata: payload.metadata,
+          metadata: payload.metadata as Prisma.InputJsonValue | undefined,
         },
       });
     } catch (err) {

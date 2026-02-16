@@ -5,6 +5,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
+    "strictPropertyInitialization": false,
     "paths": {
       "@jambaar/shared": ["../../packages/shared/src/index.ts"]
     }

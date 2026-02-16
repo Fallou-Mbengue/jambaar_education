@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class MinioService implements OnModuleInit {
   private readonly logger = new Logger(MinioService.name);
-  private client: Minio.Client;
-  private bucket: string;
+  private client!: Minio.Client;
+  private bucket!: string;
 
   constructor(private config: ConfigService) {}
 

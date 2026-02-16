@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MinioService } from '../../minio/minio.service';
@@ -211,12 +211,15 @@ export class ContentService {
     const content = await this.prisma.content.findUnique({ where: { id: contentId } });
     if (!content) throw new NotFoundException('Content not found');
 
+    const { status, ...rest } = dto;
+    const data: Parameters<typeof this.prisma.content.update>[0]['data'] = {
+      ...rest,
+      ...(status && { status: status as 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' }),
+      ...(status === 'PUBLISHED' && !content.publishedAt ? { publishedAt: new Date() } : {}),
+    };
     const updated = await this.prisma.content.update({
       where: { id: contentId },
-      data: {
-        ...dto,
-        ...(dto.status === 'PUBLISHED' && !content.publishedAt ? { publishedAt: new Date() } : {}),
-      },
+      data,
     });
 
     await this.prisma.adminContentAudit.create({

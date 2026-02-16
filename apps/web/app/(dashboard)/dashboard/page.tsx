@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api/client';
-import { Users, BookOpen, CreditCard, Flame, TrendingUp, CheckCircle } from 'lucide-react';
+import { Users, BookOpen, CreditCard, Flame, TrendingUp, CheckCircle, LucideIcon } from 'lucide-react';
 
 interface KpiData {
   users: { total: number; active30d: number; active7d: number; retentionRate30d: number };
@@ -18,7 +18,7 @@ function StatCard({
   sub,
   color,
 }: {
-  icon: React.ComponentType<{ size: number; className: string }>;
+  icon: LucideIcon;
   label: string;
   value: string | number;
   sub?: string;

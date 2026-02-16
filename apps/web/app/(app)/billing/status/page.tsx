@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import apiClient from '@/lib/api/client';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
 
-export default function BillingStatusPage() {
+function BillingStatusContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const paymentId = searchParams.get('paymentId');
@@ -87,5 +87,17 @@ export default function BillingStatusPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function BillingStatusPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <Clock size={48} className="text-brand-gold animate-spin" />
+      </div>
+    }>
+      <BillingStatusContent />
+    </Suspense>
   );
 }
