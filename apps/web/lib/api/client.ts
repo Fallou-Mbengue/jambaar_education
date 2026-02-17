@@ -1,9 +1,14 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+// En navigateur : URLs relatives pour passer par le proxy Next.js (compatibilité Safari avec cookies)
+// Sur le serveur : URL complète de l'API
+const getBaseURL = () => {
+  if (typeof window !== 'undefined') return '/api/v1';
+  return `${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'}/api/v1`;
+};
 
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: `${API_URL}/api/v1`,
+  baseURL: getBaseURL(),
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,

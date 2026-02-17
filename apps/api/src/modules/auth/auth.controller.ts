@@ -29,16 +29,18 @@ export class AuthController {
 
   private setTokenCookies(res: Response, accessToken: string, refreshToken: string) {
     const isProd = this.config.get('NODE_ENV') === 'production';
-    res.cookie('access_token', accessToken, {
+    const cookieOpts = {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'strict' : 'lax',
+      sameSite: (isProd ? 'strict' : 'lax') as 'strict' | 'lax',
+      path: '/',
+    };
+    res.cookie('access_token', accessToken, {
+      ...cookieOpts,
       maxAge: 15 * 60 * 1000, // 15 min
     });
     res.cookie('refresh_token', refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? 'strict' : 'lax',
+      ...cookieOpts,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
   }

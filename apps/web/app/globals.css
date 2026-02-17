@@ -19,8 +19,8 @@
 
 html,
 body {
-  background-color: #0A0A0A;
-  color: #ffffff;
+  background-color: #E5E7EB;
+  color: #1F2937;
   font-family: 'Inter', system-ui, sans-serif;
   overscroll-behavior: none;
 }
@@ -34,11 +34,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: #9CA3AF;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a3a;
+  background: #6B7280;
 }
 
 /* ─── Web Shell Layout ───────────────────────────────── */
@@ -46,7 +46,7 @@ body {
   display: flex;
   height: 100dvh;
   overflow: hidden;
-  background-color: #0A0A0A;
+  background-color: #E5E7EB;
 }
 
 .sidebar {
@@ -55,8 +55,8 @@ body {
   height: 100dvh;
   overflow-y: auto;
   overflow-x: hidden;
-  border-right: 1px solid #1E1E1E;
-  background-color: #0d0d0d;
+  border-right: 1px solid #D1D5DB;
+  background-color: #F3F4F6;
   transition: width 0.2s ease;
 }
 
@@ -75,8 +75,8 @@ body {
 .topbar {
   height: var(--topbar-height);
   flex-shrink: 0;
-  border-bottom: 1px solid #1E1E1E;
-  background-color: #0d0d0d;
+  border-bottom: 1px solid #D1D5DB;
+  background-color: #F3F4F6;
 }
 
 .page-content {
@@ -90,8 +90,8 @@ body {
   flex-shrink: 0;
   height: 100dvh;
   overflow-y: auto;
-  border-left: 1px solid #1E1E1E;
-  background-color: #0d0d0d;
+  border-left: 1px solid #D1D5DB;
+  background-color: #F3F4F6;
 }
 
 /* ─── Feed (mobile snap scroll) ─────────────────────── */
@@ -122,7 +122,7 @@ body {
 }
 
 .split-panel-left {
-  border-right: 1px solid #1E1E1E;
+  border-right: 1px solid #D1D5DB;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -133,30 +133,30 @@ body {
 
 /* ─── Glassmorphism ──────────────────────────────────── */
 .glass {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .glass-hover {
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 .glass-hover:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 /* ─── Card ───────────────────────────────────────────── */
 .card {
-  background: #141414;
-  border: 1px solid #1E1E1E;
+  background: #FFFFFF;
+  border: 1px solid #D1D5DB;
   border-radius: 12px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .card:hover {
-  border-color: #2a2a2a;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-color: #9CA3AF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .card-interactive {
@@ -164,12 +164,12 @@ body {
 }
 
 .card-interactive:hover {
-  border-color: rgba(249, 115, 22, 0.2);
+  border-color: rgba(249, 115, 22, 0.5);
 }
 
 /* ─── Shimmer loading ────────────────────────────────── */
 .shimmer {
-  background: linear-gradient(90deg, #1a1a1a 25%, #242424 50%, #1a1a1a 75%);
+  background: linear-gradient(90deg, #E5E7EB 25%, #F3F4F6 50%, #E5E7EB 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -197,7 +197,7 @@ body {
   gap: 10px;
   padding: 8px 12px;
   border-radius: 8px;
-  color: #A0A0A0;
+  color: #6B7280;
   font-size: 14px;
   font-weight: 500;
   transition: background 0.12s ease, color 0.12s ease;
@@ -206,8 +206,8 @@ body {
 }
 
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.05);
+  color: #1F2937;
 }
 
 .nav-item.active {
@@ -231,11 +231,11 @@ body {
   align-items: center;
   justify-content: center;
   padding: 1px 5px;
-  background: #1E1E1E;
-  border: 1px solid #2a2a2a;
+  background: #E5E7EB;
+  border: 1px solid #D1D5DB;
   border-radius: 4px;
   font-size: 10px;
-  color: #A0A0A0;
+  color: #4B5563;
   font-family: ui-monospace, monospace;
 }
 
@@ -249,12 +249,12 @@ body {
 
 /* ─── Tooltip ────────────────────────────────────────── */
 .tooltip-content {
-  background: #1c1c1c;
-  border: 1px solid #2a2a2a;
+  background: #1F2937;
+  border: 1px solid #374151;
   border-radius: 6px;
   padding: 4px 8px;
   font-size: 12px;
-  color: #e5e5e5;
+  color: #F9FAFB;
   pointer-events: none;
 }
 

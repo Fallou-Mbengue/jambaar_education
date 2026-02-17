@@ -245,6 +245,28 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 
 ---
 
+## Dépannage
+
+### Les données ne s'affichent pas (feed vide)
+
+1. **L'API est-elle démarrée ?** Après `pnpm dev`, vous devriez voir `🚀 API running at http://localhost:3001/api/v1` dans le terminal.
+2. **PostgreSQL, Redis et MinIO tournent-ils ?** Lancer `docker-compose up postgres redis minio -d` avant l'API.
+3. **La base est-elle migrée et seedée ?** Exécuter `pnpm db:migrate` puis `pnpm db:seed` depuis la racine du projet.
+4. **Êtes-vous connecté ?** Le feed nécessite une authentification. Connectez-vous avec :
+   - `moussa@example.com` / `User123!`
+   - ou `fatou@example.com` / `User123!`
+5. **Vérifier la console du navigateur** (F12 → Réseau) : les requêtes vers `/api/v1/feed` doivent retourner 200. Un 401 signifie que la session a expiré — reconnectez-vous.
+
+### L'API ne démarre pas ou s'arrête juste après la compilation
+
+- Le script `dev` utilise maintenant `nest start --watch`, qui compile et démarre le serveur.
+- Si l'API plante au démarrage, vérifier :
+  - `DATABASE_URL` dans `.env` (PostgreSQL accessible)
+  - `REDIS_URL` (Redis accessible)
+  - `JWT_SECRET` et `JWT_REFRESH_SECRET` renseignés
+
+---
+
 ## Architecture Decisions
 
 ### Event-Driven Gamification

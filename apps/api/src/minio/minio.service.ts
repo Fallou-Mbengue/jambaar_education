@@ -11,14 +11,18 @@ export class MinioService implements OnModuleInit {
 
   constructor(private config: ConfigService) {}
 
+  private get(key: string, fallback: string | number): string | number {
+    return this.config?.get(key) ?? process.env[key] ?? fallback;
+  }
+
   async onModuleInit() {
-    this.bucket = this.config.get<string>('MINIO_BUCKET', 'jambaar');
+    this.bucket = (this.get('MINIO_BUCKET', 'jambaar') as string);
     this.client = new Minio.Client({
-      endPoint: this.config.get<string>('MINIO_ENDPOINT', 'localhost'),
-      port: this.config.get<number>('MINIO_PORT', 9000),
-      useSSL: this.config.get<string>('MINIO_USE_SSL', 'false') === 'true',
-      accessKey: this.config.get<string>('MINIO_ACCESS_KEY', 'minioadmin'),
-      secretKey: this.config.get<string>('MINIO_SECRET_KEY', 'minioadmin'),
+      endPoint: this.get('MINIO_ENDPOINT', 'localhost') as string,
+      port: Number(this.get('MINIO_PORT', 9000)),
+      useSSL: String(this.get('MINIO_USE_SSL', 'false')) === 'true',
+      accessKey: this.get('MINIO_ACCESS_KEY', 'minioadmin') as string,
+      secretKey: this.get('MINIO_SECRET_KEY', 'minioadmin') as string,
     });
 
     await this.ensureBucket();
@@ -74,9 +78,9 @@ export class MinioService implements OnModuleInit {
   }
 
   async getPublicUrl(objectKey: string): Promise<string> {
-    const endpoint = this.config.get<string>('MINIO_ENDPOINT', 'localhost');
-    const port = this.config.get<number>('MINIO_PORT', 9000);
-    const ssl = this.config.get<string>('MINIO_USE_SSL', 'false') === 'true';
+    const endpoint = this.get('MINIO_ENDPOINT', 'localhost') as string;
+    const port = Number(this.get('MINIO_PORT', 9000));
+    const ssl = String(this.get('MINIO_USE_SSL', 'false')) === 'true';
     const protocol = ssl ? 'https' : 'http';
     return `${protocol}://${endpoint}:${port}/${this.bucket}/${objectKey}`;
   }

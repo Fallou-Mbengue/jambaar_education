@@ -53,7 +53,7 @@ export function Sidebar({ compact = false, onToggle }: SidebarProps) {
           <span className="text-white font-black text-sm">J</span>
         </div>
         {!compact && (
-          <span className="text-white font-bold text-lg tracking-tight">JAMBAAR</span>
+          <span className="text-gray-800 font-bold text-lg tracking-tight">JAMBAAR</span>
         )}
       </div>
 
@@ -103,7 +103,7 @@ export function Sidebar({ compact = false, onToggle }: SidebarProps) {
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-xs font-medium truncate">
+              <p className="text-gray-800 text-xs font-medium truncate">
                 {user.profile?.firstName
                   ? `${user.profile.firstName} ${user.profile.lastName ?? ''}`
                   : user.email}
@@ -119,7 +119,7 @@ export function Sidebar({ compact = false, onToggle }: SidebarProps) {
         <button
           onClick={onToggle}
           className={clsx(
-            'flex items-center justify-center h-9 border-t border-dark-border text-dark-text hover:text-white hover:bg-white/5 transition-colors flex-shrink-0',
+            'flex items-center justify-center h-9 border-t border-dark-border text-dark-text hover:text-gray-800 hover:bg-white/5 transition-colors flex-shrink-0',
             compact ? 'w-full' : 'px-4 gap-2 text-xs',
           )}
           aria-label={compact ? 'Étendre la barre latérale' : 'Réduire la barre latérale'}

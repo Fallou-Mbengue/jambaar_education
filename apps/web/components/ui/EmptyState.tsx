@@ -38,7 +38,7 @@ export function EmptyState({
           <Icon size={28} className="text-dark-text" aria-hidden="true" />
         </div>
       )}
-      <h3 className="text-white font-semibold text-base mb-2">{title}</h3>
+      <h3 className="text-gray-800 font-semibold text-base mb-2">{title}</h3>
       {description && (
         <p className="text-dark-text text-sm max-w-xs leading-relaxed">{description}</p>
       )}

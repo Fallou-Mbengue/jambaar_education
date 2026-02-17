@@ -47,4 +47,4 @@ ENV API_PORT=3001
 
 EXPOSE 3001
 
-CMD ["node", "dist/apps/api/src/main.js"]
+CMD ["node", "dist/main.js"]

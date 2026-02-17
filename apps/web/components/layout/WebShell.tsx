@@ -10,8 +10,8 @@ import { RightPanel } from './RightPanel';
 import { useNotificationsStore } from '@/store/notifications.store';
 import clsx from 'clsx';
 
-// Pages that don't show the right panel
-const NO_PANEL_ROUTES = ['/assistant', '/billing', '/saved', '/onboarding'];
+// Pages that don't show the right panel (section Contexte)
+const NO_PANEL_ROUTES = ['/home', '/programs', '/assistant', '/billing', '/saved', '/onboarding'];
 // Pages where we use compact sidebar (tablet) – handled via CSS
 const MOBILE_NAV_ITEMS = [
   { href: '/home', icon: Home, label: 'Feed' },
@@ -76,7 +76,7 @@ export function WebShell({ children }: WebShellProps) {
                   href={href}
                   className={clsx(
                     'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors relative',
-                    isActive ? 'text-brand-orange' : 'text-dark-text hover:text-white',
+                    isActive ? 'text-brand-orange' : 'text-dark-text hover:text-gray-800',
                   )}
                   aria-current={isActive ? 'page' : undefined}
                 >

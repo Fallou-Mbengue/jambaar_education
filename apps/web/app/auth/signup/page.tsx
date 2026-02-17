@@ -13,8 +13,12 @@ const signupSchema = z.object({
   firstName: z.string().min(1, 'Prénom requis'),
   lastName: z.string().min(1, 'Nom requis'),
   email: z.string().email('Email invalide'),
-  password: z.string().min(8, 'Au moins 8 caractères'),
   phone: z.string().optional(),
+  password: z.string().min(8, 'Au moins 8 caractères'),
+  confirmPassword: z.string().min(1, 'Confirmation requise'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Les mots de passe ne correspondent pas',
+  path: ['confirmPassword'],
 });
 
 type SignupForm = z.infer<typeof signupSchema>;
@@ -35,90 +39,121 @@ export default function SignupPage() {
     setLoading(true);
     setError('');
     try {
-      await authApi.signup(data);
+      const { confirmPassword: _confirmPassword, ...dto } = data;
+      await authApi.signup(dto);
       const meRes = await authApi.getMe();
       setUser(meRes.data.data);
       router.push('/onboarding');
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(typeof msg === 'string' ? msg : 'Une erreur est survenue');
+      const res = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data;
+      const msg = res?.message;
+      const text =
+        typeof msg === 'string'
+          ? msg
+          : Array.isArray(msg)
+            ? msg[0]
+            : 'Une erreur est survenue';
+      setError(text);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4 pattern-bg">
+    <div className="min-h-screen bg-[#E5E7EB] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="text-4xl font-bold text-brand-orange mb-1">JAMBAAR</div>
           <div className="text-sm text-dark-text">Ton futur commence avec un skill.</div>
         </div>
 
-        <div className="glass rounded-2xl p-6 space-y-4">
-          <h1 className="text-xl font-semibold text-center">Créer un compte</h1>
+        <div className="bg-white border border-dark-border rounded-2xl p-6 shadow-card space-y-4">
+          <h1 className="text-xl font-semibold text-center text-gray-800">Créer un compte</h1>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-2 rounded-lg">
+            <div
+              className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg"
+              role="alert"
+            >
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <input
-                  {...register('firstName')}
-                  placeholder="Prénom"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
-                />
-                {errors.firstName && (
-                  <p className="text-red-400 text-xs mt-1">{errors.firstName.message}</p>
-                )}
-              </div>
-              <div>
-                <input
-                  {...register('lastName')}
-                  placeholder="Nom"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
-                />
-                {errors.lastName && (
-                  <p className="text-red-400 text-xs mt-1">{errors.lastName.message}</p>
-                )}
-              </div>
+            <div>
+              <label className="block text-xs font-semibold text-dark-text mb-1">Prénom</label>
+              <input
+                {...register('firstName')}
+                placeholder="Prénom"
+                className="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors"
+              />
+              {errors.firstName && (
+                <p className="text-red-600 text-xs mt-1">{errors.firstName.message}</p>
+              )}
             </div>
 
             <div>
+              <label className="block text-xs font-semibold text-dark-text mb-1">Nom</label>
+              <input
+                {...register('lastName')}
+                placeholder="Nom"
+                className="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors"
+              />
+              {errors.lastName && (
+                <p className="text-red-600 text-xs mt-1">{errors.lastName.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-dark-text mb-1">Email</label>
               <input
                 {...register('email')}
                 type="email"
                 placeholder="Email"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
+                className="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors"
               />
               {errors.email && (
-                <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
+                <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>
               )}
             </div>
 
             <div>
-              <input
-                {...register('password')}
-                type="password"
-                placeholder="Mot de passe (min. 8 caractères)"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
-              />
-              {errors.password && (
-                <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>
-              )}
-            </div>
-
-            <div>
+              <label className="block text-xs font-semibold text-dark-text mb-1">Téléphone</label>
               <input
                 {...register('phone')}
                 type="tel"
-                placeholder="Téléphone (optionnel)"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
+                placeholder="Téléphone"
+                className="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors"
               />
+              {errors.phone && (
+                <p className="text-red-600 text-xs mt-1">{errors.phone.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-dark-text mb-1">Mot de passe</label>
+              <input
+                {...register('password')}
+                type="password"
+                placeholder="Mot de passe"
+                className="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors"
+              />
+              {errors.password && (
+                <p className="text-red-600 text-xs mt-1">{errors.password.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-dark-text mb-1">Confirmation mot de passe</label>
+              <input
+                {...register('confirmPassword')}
+                type="password"
+                placeholder="Confirmation mot de passe"
+                className="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors"
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-600 text-xs mt-1">{errors.confirmPassword.message}</p>
+              )}
             </div>
 
             <button

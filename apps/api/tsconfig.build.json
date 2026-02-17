@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "paths": {
+      "@jambaar/shared": ["../../packages/shared/dist"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "test", "prisma/seed"]
+}

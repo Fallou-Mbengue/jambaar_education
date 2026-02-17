@@ -39,7 +39,7 @@ export function RightPanel() {
       <div className="right-panel flex flex-col items-center pt-4 w-10 !border-l border-dark-border bg-surface-1">
         <button
           onClick={togglePanel}
-          className="p-1.5 text-dark-text hover:text-white transition-colors rounded"
+          className="p-1.5 text-dark-text hover:text-gray-800 transition-colors rounded"
           aria-label="Ouvrir le panneau contextuel"
         >
           <ChevronRight size={16} />
@@ -66,7 +66,7 @@ export function RightPanel() {
         </span>
         <button
           onClick={togglePanel}
-          className="p-1 text-dark-text hover:text-white transition-colors rounded"
+          className="p-1 text-dark-text hover:text-gray-800 transition-colors rounded"
           aria-label="Fermer le panneau"
         >
           <PanelRightClose size={15} />
@@ -80,7 +80,7 @@ export function RightPanel() {
           <div className="card p-3">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp size={13} className="text-brand-orange" />
-              <span className="text-xs font-semibold text-white uppercase tracking-wide">Ma Progression</span>
+              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">Ma Progression</span>
             </div>
             <div className="flex gap-3 mb-3">
               <div className="flex-1 bg-surface-2 rounded-lg p-2.5 text-center">
@@ -124,7 +124,7 @@ export function RightPanel() {
           <div className="card p-3">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles size={13} className="text-brand-orange" />
-              <span className="text-xs font-semibold text-white uppercase tracking-wide">Résumé IA</span>
+              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">Résumé IA</span>
             </div>
             {content.isLoadingSummary ? (
               <div className="flex items-center gap-2 text-dark-text text-xs py-2">
@@ -152,7 +152,7 @@ export function RightPanel() {
           <div className="card p-3">
             <div className="flex items-center gap-2 mb-2">
               <BookOpen size={13} className="text-brand-green" />
-              <span className="text-xs font-semibold text-white uppercase tracking-wide">Avancement</span>
+              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">Avancement</span>
             </div>
             <div className="flex justify-between text-xs mb-1.5">
               <span className="text-dark-text">{content.progression.label}</span>
@@ -172,7 +172,7 @@ export function RightPanel() {
           <div className="card p-3 border-brand-orange/20">
             <div className="flex items-center gap-2 mb-3">
               <Zap size={13} className="text-brand-orange" />
-              <span className="text-xs font-semibold text-white uppercase tracking-wide">
+              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">
                 Challenge du Jour
               </span>
             </div>
@@ -182,7 +182,7 @@ export function RightPanel() {
               </span>
               <span className="text-dark-text text-xs">/ {content.challengeDay.total} jours</span>
             </div>
-            <p className="text-sm text-white font-medium mb-1">
+            <p className="text-sm text-gray-800 font-medium mb-1">
               {content.challengeDay.title}
             </p>
             <div className="flex items-center gap-1 mt-2">
@@ -199,7 +199,7 @@ export function RightPanel() {
           <div className="card p-3">
             <div className="flex items-center gap-2 mb-2">
               <PlayCircle size={13} className="text-dark-text" />
-              <span className="text-xs font-semibold text-white uppercase tracking-wide">
+              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">
                 Suivant
               </span>
             </div>
@@ -211,7 +211,7 @@ export function RightPanel() {
                 <PlayCircle size={18} className="text-brand-orange" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-white font-medium line-clamp-2 group-hover:text-brand-orange transition-colors">
+                <p className="text-xs text-gray-800 font-medium line-clamp-2 group-hover:text-brand-orange transition-colors">
                   {content.nextContent.title}
                 </p>
                 {content.nextContent.durationSeconds && (
@@ -220,7 +220,7 @@ export function RightPanel() {
                   </p>
                 )}
               </div>
-              <ChevronRight size={13} className="text-dark-text group-hover:text-white flex-shrink-0" />
+              <ChevronRight size={13} className="text-dark-text group-hover:text-gray-800 flex-shrink-0" />
             </button>
           </div>
         )}
@@ -228,7 +228,7 @@ export function RightPanel() {
         {/* ── Quick actions ── */}
         {!content.contentId && !isChallengePage && !isAssistantPage && (
           <div className="card p-3">
-            <p className="text-xs font-semibold text-white uppercase tracking-wide mb-3">
+            <p className="text-xs font-semibold text-gray-800 uppercase tracking-wide mb-3">
               Accès Rapide
             </p>
             <div className="space-y-1.5">
@@ -247,7 +247,7 @@ export function RightPanel() {
                   )}
                 >
                   <Icon size={13} aria-hidden="true" />
-                  <span className="text-white">{label}</span>
+                  <span className="text-gray-800">{label}</span>
                   <ChevronRight size={11} className="text-dark-text ml-auto" />
                 </button>
               ))}

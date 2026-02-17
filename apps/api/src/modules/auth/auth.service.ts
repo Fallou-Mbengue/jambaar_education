@@ -53,12 +53,12 @@ export class AuthService {
 
   async login(dto: LoginDto): Promise<TokenPair> {
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    if (!user) throw new UnauthorizedException('Email ou mot de passe incorrect.');
 
     const valid = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!valid) throw new UnauthorizedException('Invalid credentials');
+    if (!valid) throw new UnauthorizedException('Email ou mot de passe incorrect.');
 
-    if (!user.isActive) throw new UnauthorizedException('Account deactivated');
+    if (!user.isActive) throw new UnauthorizedException('Compte désactivé.');
 
     await this.prisma.user.update({
       where: { id: user.id },

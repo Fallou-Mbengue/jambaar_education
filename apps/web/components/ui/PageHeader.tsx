@@ -30,7 +30,7 @@ export function PageHeader({
           </div>
         )}
         <div className="min-w-0">
-          <h1 className="text-xl font-bold text-white leading-tight">{title}</h1>
+          <h1 className="text-xl font-bold text-gray-800 leading-tight">{title}</h1>
           {description && (
             <p className="text-dark-text text-sm mt-0.5">{description}</p>
           )}

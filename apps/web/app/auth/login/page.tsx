@@ -39,15 +39,22 @@ function LoginContent() {
       const from = searchParams.get('from') ?? '/home';
       router.push(from);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setError(typeof msg === 'string' ? msg : 'Identifiants incorrects');
+      const res = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data;
+      const msg = res?.message;
+      const text =
+        typeof msg === 'string'
+          ? msg
+          : Array.isArray(msg)
+            ? msg[0]
+            : 'Email ou mot de passe incorrect.';
+      setError(text);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4 pattern-bg">
+    <div className="min-h-screen bg-[#E5E7EB] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -55,11 +62,14 @@ function LoginContent() {
           <div className="text-sm text-dark-text">Les soft skills qui ouvrent les portes.</div>
         </div>
 
-        <div className="glass rounded-2xl p-6 space-y-4">
-          <h1 className="text-xl font-semibold text-center">Connexion</h1>
+        <div className="bg-white border border-dark-border rounded-2xl p-6 shadow-card space-y-4">
+          <h1 className="text-xl font-semibold text-center text-gray-800">Connexion</h1>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-2 rounded-lg">
+            <div
+              className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg"
+              role="alert"
+            >
               {error}
             </div>
           )}
@@ -70,7 +80,7 @@ function LoginContent() {
                 {...register('email')}
                 type="email"
                 placeholder="Email"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
+                className="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors"
               />
               {errors.email && (
                 <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
@@ -82,7 +92,7 @@ function LoginContent() {
                 {...register('password')}
                 type="password"
                 placeholder="Mot de passe"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
+                className="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange transition-colors"
               />
               {errors.password && (
                 <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>
@@ -113,7 +123,7 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4 pattern-bg">
+      <div className="min-h-screen bg-[#E5E7EB] flex items-center justify-center p-4">
         <div className="text-brand-orange">Chargement...</div>
       </div>
     }>

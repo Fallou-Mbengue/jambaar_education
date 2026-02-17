@@ -12,7 +12,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#0A0A0A',
+  themeColor: '#E5E7EB',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </head>
-      <body className="bg-dark-bg text-white antialiased">
+      <body className="bg-dark-bg text-gray-800 antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

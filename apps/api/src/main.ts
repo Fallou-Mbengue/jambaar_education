@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -34,19 +35,23 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Jambaar Education API')
-    .setDescription('API for Jambaar Education platform')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addCookieAuth('access_token')
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
-
   const port = config.get<number>('API_PORT', 3001);
+  try {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Jambaar Education API')
+      .setDescription('API for Jambaar Education platform')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .addCookieAuth('access_token')
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, document);
+    console.log(`📖 Swagger at http://localhost:${port}/api/docs`);
+  } catch {
+    console.warn('⚠️  Swagger skipped (use nest build + node for full docs)');
+  }
+
   await app.listen(port);
   console.log(`🚀 API running at http://localhost:${port}/api/v1`);
-  console.log(`📖 Swagger at http://localhost:${port}/api/docs`);
 }
 bootstrap();

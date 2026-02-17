@@ -91,14 +91,14 @@ export function Topbar() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Rechercher programmes, contenu..."
-            className="w-full bg-surface-2 border border-dark-border rounded-lg pl-8 pr-3 py-2 text-sm text-white placeholder-dark-text focus:outline-none focus:border-brand-orange/50 focus:bg-surface-3 transition-colors"
+            className="w-full bg-surface-2 border border-dark-border rounded-lg pl-8 pr-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-brand-orange/50 focus:bg-surface-3 transition-colors"
             aria-label="Recherche globale"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-dark-text hover:text-white"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-dark-text hover:text-gray-800"
               aria-label="Effacer la recherche"
             >
               <X size={13} />
@@ -112,7 +112,7 @@ export function Topbar() {
         <div ref={notifRef} className="relative">
           <button
             onClick={handleNotifOpen}
-            className="relative p-2 rounded-lg text-dark-text hover:text-white hover:bg-surface-2 transition-colors"
+            className="relative p-2 rounded-lg text-dark-text hover:text-gray-800 hover:bg-surface-2 transition-colors"
             aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} non lues)` : ''}`}
             aria-haspopup="true"
             aria-expanded={isNotifOpen}
@@ -131,7 +131,7 @@ export function Topbar() {
               role="menu"
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-dark-border">
-                <span className="text-sm font-semibold text-white">Notifications</span>
+                <span className="text-sm font-semibold text-gray-800">Notifications</span>
                 <Link
                   href="/profile"
                   onClick={() => setIsNotifOpen(false)}
@@ -152,7 +152,7 @@ export function Topbar() {
                         !n.isRead && 'bg-brand-orange/5',
                       )}
                     >
-                      <p className="text-sm text-white font-medium">{n.title}</p>
+                      <p className="text-sm text-gray-800 font-medium">{n.title}</p>
                       <p className="text-xs text-dark-text mt-0.5 line-clamp-2">{n.body}</p>
                     </div>
                   ))
@@ -174,7 +174,7 @@ export function Topbar() {
             <div className="w-7 h-7 bg-brand-orange/20 rounded-full flex items-center justify-center flex-shrink-0">
               <span className="text-brand-orange text-xs font-bold">{initials}</span>
             </div>
-            <span className="text-sm text-white max-w-[120px] truncate hidden lg:block">
+            <span className="text-sm text-gray-800 max-w-[120px] truncate hidden lg:block">
               {displayName}
             </span>
             <ChevronDown
@@ -193,14 +193,14 @@ export function Topbar() {
               role="menu"
             >
               <div className="px-4 py-3 border-b border-dark-border">
-                <p className="text-sm font-medium text-white truncate">{displayName}</p>
+                <p className="text-sm font-medium text-gray-800 truncate">{displayName}</p>
                 <p className="text-xs text-dark-text truncate">{user?.email}</p>
               </div>
               <div className="py-1">
                 <Link
                   href="/profile"
                   onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-dark-text hover:text-white hover:bg-surface-2 transition-colors"
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-dark-text hover:text-gray-800 hover:bg-surface-2 transition-colors"
                   role="menuitem"
                 >
                   <User size={15} aria-hidden="true" />
@@ -209,7 +209,7 @@ export function Topbar() {
                 <Link
                   href="/billing"
                   onClick={() => setIsProfileOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-dark-text hover:text-white hover:bg-surface-2 transition-colors"
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-dark-text hover:text-gray-800 hover:bg-surface-2 transition-colors"
                   role="menuitem"
                 >
                   <CreditCard size={15} aria-hidden="true" />
