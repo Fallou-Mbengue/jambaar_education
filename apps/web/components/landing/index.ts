@@ -1,0 +1,11 @@
+export { LandingHeader } from './LandingHeader';
+export { HeroSection } from './HeroSection';
+export { WhyJambaar } from './WhyJambaar';
+export { HowItWorks } from './HowItWorks';
+export { ShowcaseProduct } from './ShowcaseProduct';
+export { GamificationSection } from './GamificationSection';
+export { PricingSection } from './PricingSection';
+export { SocialProof } from './SocialProof';
+export { FAQSection } from './FAQSection';
+export { FinalCTA } from './FinalCTA';
+export { LandingFooter } from './LandingFooter';
