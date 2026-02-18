@@ -48,23 +48,23 @@ jobs:
           POSTGRES_DB: jambaar_test
           POSTGRES_USER: jambaar
           POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
 
       redis:
         image: redis:7-alpine
+        ports:
+          - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 6379:6379
 
     env:
       DATABASE_URL: postgresql://jambaar:test_password@localhost:5432/jambaar_test
