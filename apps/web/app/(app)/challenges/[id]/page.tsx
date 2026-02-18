@@ -113,12 +113,12 @@ export default function ChallengeDetailPage() {
       <div className="sticky top-0 z-10 bg-dark-bg/90 backdrop-blur px-4 md:px-6 py-3 flex items-center gap-3 border-b border-dark-border md:border-transparent">
         <button
           onClick={() => router.push('/challenges')}
-          className="text-dark-text hover:text-white transition-colors"
+          className="text-dark-text hover:text-dark-text transition-colors"
           aria-label="Retour aux challenges"
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-white font-semibold flex-1 line-clamp-1 text-sm md:text-base">
+        <h1 className="text-dark-text font-semibold flex-1 line-clamp-1 text-sm md:text-base">
           {challenge.title}
         </h1>
         {isCompleted && (
@@ -145,7 +145,7 @@ export default function ChallengeDetailPage() {
               )}
             </div>
             <div className="flex-1">
-              <h2 className="text-lg font-bold text-white mb-1">{challenge.title}</h2>
+              <h2 className="text-lg font-bold text-dark-text mb-1">{challenge.title}</h2>
               {challenge.description && (
                 <p className="text-dark-text text-sm leading-relaxed">{challenge.description}</p>
               )}
@@ -192,7 +192,7 @@ export default function ChallengeDetailPage() {
             <button
               onClick={() => joinMutation.mutate()}
               disabled={joinMutation.isPending}
-              className="w-full mt-4 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl py-3 font-semibold transition-colors disabled:opacity-50"
+              className="w-full mt-4 bg-brand-orange hover:bg-brand-orange-dark text-dark-text rounded-xl py-3 font-semibold transition-colors disabled:opacity-50"
             >
               {joinMutation.isPending ? 'Inscription...' : 'Rejoindre le challenge'}
             </button>
@@ -201,7 +201,7 @@ export default function ChallengeDetailPage() {
 
         {/* Timeline */}
         <div>
-          <h3 className="text-sm font-semibold text-white uppercase tracking-wide mb-3">
+          <h3 className="text-sm font-semibold text-dark-text uppercase tracking-wide mb-3">
             Programme J1–J{challenge.durationDays ?? 7}
           </h3>
 
@@ -256,7 +256,7 @@ export default function ChallengeDetailPage() {
                         <p
                           className={clsx(
                             'text-sm font-semibold',
-                            status === 'current' ? 'text-brand-orange' : 'text-white',
+                            status === 'current' ? 'text-brand-orange' : 'text-dark-text',
                           )}
                         >
                           Jour {dayNum}{dayData?.title ? ` — ${dayData.title}` : ''}
@@ -283,7 +283,7 @@ export default function ChallengeDetailPage() {
                       {status === 'current' && !isCompleted && (
                         <button
                           onClick={() => handleValidate(dayNum)}
-                          className="flex-shrink-0 bg-brand-orange hover:bg-brand-orange-dark text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                          className="flex-shrink-0 bg-brand-orange hover:bg-brand-orange-dark text-dark-text text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
                         >
                           Valider
                         </button>
@@ -311,7 +311,7 @@ export default function ChallengeDetailPage() {
           aria-labelledby="validate-modal-title"
         >
           <div className="bg-surface-1 border border-dark-border w-full md:max-w-md rounded-t-2xl md:rounded-2xl p-6 shadow-modal">
-            <h3 id="validate-modal-title" className="text-white font-bold text-base mb-1">
+            <h3 id="validate-modal-title" className="text-dark-text font-bold text-base mb-1">
               Valider — Jour {validatingDay}
             </h3>
             <p className="text-dark-text text-sm mb-4">
@@ -321,7 +321,7 @@ export default function ChallengeDetailPage() {
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
               placeholder="Ce que j'ai appris aujourd'hui..."
-              className="w-full bg-surface-2 border border-dark-border rounded-xl p-3 text-white text-sm resize-none focus:outline-none focus:border-brand-orange/50 transition-colors mb-4"
+              className="w-full bg-surface-2 border border-dark-border rounded-xl p-3 text-dark-text text-sm resize-none focus:outline-none focus:border-brand-orange/50 transition-colors mb-4"
               rows={3}
               autoFocus
             />
@@ -332,14 +332,14 @@ export default function ChallengeDetailPage() {
                   setReflection('');
                   setValidatingDay(null);
                 }}
-                className="flex-1 border border-dark-border text-white rounded-xl py-3 text-sm font-medium hover:bg-surface-2 transition-colors"
+                className="flex-1 border border-dark-border text-dark-text rounded-xl py-3 text-sm font-medium hover:bg-surface-2 transition-colors"
               >
                 Annuler
               </button>
               <button
                 onClick={() => validateMutation.mutate({ dayNumber: validatingDay!, reflection: reflection || undefined })}
                 disabled={validateMutation.isPending}
-                className="flex-1 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl py-3 text-sm font-semibold transition-colors disabled:opacity-50"
+                className="flex-1 bg-brand-orange hover:bg-brand-orange-dark text-dark-text rounded-xl py-3 text-sm font-semibold transition-colors disabled:opacity-50"
               >
                 {validateMutation.isPending ? 'Validation...' : 'Confirmer ✓'}
               </button>

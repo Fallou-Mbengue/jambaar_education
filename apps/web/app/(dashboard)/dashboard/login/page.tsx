@@ -67,18 +67,18 @@ export default function DashboardLoginPage() {
               {...register('email')}
               type="email"
               placeholder="Email"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
             />
             <input
               {...register('password')}
               type="password"
               placeholder="Mot de passe"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
             />
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors"
+              className="w-full bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-50 text-dark-text font-semibold py-3 rounded-xl transition-colors"
             >
               {loading ? 'Connexion...' : 'Accéder au dashboard'}
             </button>

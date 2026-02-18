@@ -119,7 +119,7 @@ export function Topbar() {
           >
             <Bell size={18} aria-hidden="true" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 bg-brand-orange text-white text-[9px] rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5 font-bold">
+              <span className="absolute top-1 right-1 bg-brand-orange text-dark-text text-[9px] rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5 font-bold">
                 {unreadCount > 9 ? '9+' : unreadCount}
               </span>
             )}

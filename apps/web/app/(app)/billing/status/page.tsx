@@ -38,7 +38,7 @@ function BillingStatusContent() {
         {status === 'PENDING' && (
           <>
             <Clock size={64} className="text-brand-gold mx-auto mb-4 animate-spin" />
-            <h1 className="text-xl font-bold text-white mb-2">Paiement en cours...</h1>
+            <h1 className="text-xl font-bold text-dark-text mb-2">Paiement en cours...</h1>
             <p className="text-dark-text text-sm">
               Confirmez la transaction sur votre téléphone.
             </p>
@@ -57,13 +57,13 @@ function BillingStatusContent() {
         {status === 'SUCCESS' && (
           <>
             <CheckCircle size={64} className="text-brand-green mx-auto mb-4" />
-            <h1 className="text-xl font-bold text-white mb-2">Paiement confirmé ! 🎉</h1>
+            <h1 className="text-xl font-bold text-dark-text mb-2">Paiement confirmé ! 🎉</h1>
             <p className="text-dark-text text-sm mb-6">
               Ton abonnement est maintenant actif. Bonne chance dans ton apprentissage !
             </p>
             <button
               onClick={() => router.push('/home')}
-              className="w-full bg-brand-orange text-white font-bold py-3 rounded-xl"
+              className="w-full bg-brand-orange text-dark-text font-bold py-3 rounded-xl"
             >
               Commencer à apprendre
             </button>
@@ -73,13 +73,13 @@ function BillingStatusContent() {
         {status === 'FAILED' && (
           <>
             <XCircle size={64} className="text-red-500 mx-auto mb-4" />
-            <h1 className="text-xl font-bold text-white mb-2">Paiement échoué</h1>
+            <h1 className="text-xl font-bold text-dark-text mb-2">Paiement échoué</h1>
             <p className="text-dark-text text-sm mb-6">
               Le paiement n&apos;a pas pu être traité. Vérifie ton solde et réessaie.
             </p>
             <button
               onClick={() => router.push('/billing')}
-              className="w-full bg-brand-orange text-white font-bold py-3 rounded-xl"
+              className="w-full bg-brand-orange text-dark-text font-bold py-3 rounded-xl"
             >
               Réessayer
             </button>

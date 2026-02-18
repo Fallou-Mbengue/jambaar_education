@@ -31,13 +31,13 @@ export function MobileShell({ children }: { children: React.ReactNode }) {
                 key={href}
                 href={href}
                 className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors relative ${
-                  isActive ? 'text-brand-orange' : 'text-dark-text hover:text-white'
+                  isActive ? 'text-brand-orange' : 'text-dark-text hover:text-dark-text'
                 }`}
               >
                 <div className="relative">
                   <Icon size={22} strokeWidth={isActive ? 2.5 : 1.5} />
                   {href === '/profile' && unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-brand-orange text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
+                    <span className="absolute -top-1 -right-1 bg-brand-orange text-dark-text text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}

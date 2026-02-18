@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
                   isActive
                     ? 'bg-brand-orange/20 text-brand-orange font-medium'
-                    : 'text-dark-text hover:text-white hover:bg-white/5'
+                    : 'text-dark-text hover:text-dark-text hover:bg-white/5'
                 }`}
               >
                 <Icon size={18} />

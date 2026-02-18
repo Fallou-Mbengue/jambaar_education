@@ -41,10 +41,10 @@ export default function DashboardContentPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Catalogue Contenus</h1>
+        <h1 className="text-2xl font-bold text-dark-text">Catalogue Contenus</h1>
         <Link
           href="/dashboard/content/new"
-          className="flex items-center gap-2 bg-brand-orange hover:bg-brand-orange-dark text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+          className="flex items-center gap-2 bg-brand-orange hover:bg-brand-orange-dark text-dark-text px-4 py-2 rounded-xl text-sm font-medium transition-colors"
         >
           <Plus size={16} />
           Nouveau contenu
@@ -59,13 +59,13 @@ export default function DashboardContentPage() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Rechercher..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors text-sm"
+            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors text-sm"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-brand-orange"
+          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-dark-text focus:outline-none focus:border-brand-orange"
         >
           <option value="">Tous statuts</option>
           <option value="DRAFT">Brouillon</option>
@@ -94,7 +94,7 @@ export default function DashboardContentPage() {
               (data?.items ?? []).map((item: ContentItem) => (
                 <tr key={item.id} className="border-b border-white/5 hover:bg-white/3 transition-colors">
                   <td className="px-4 py-3">
-                    <div className="font-medium text-white line-clamp-1">{item.title}</div>
+                    <div className="font-medium text-dark-text line-clamp-1">{item.title}</div>
                     {item.isPremium && (
                       <span className="text-xs text-brand-gold">Premium</span>
                     )}
@@ -105,7 +105,7 @@ export default function DashboardContentPage() {
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-white">{item.viewCount}</td>
+                  <td className="px-4 py-3 text-dark-text">{item.viewCount}</td>
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/dashboard/content/${item.id}/edit`}

@@ -151,7 +151,7 @@ function FeedRowItem({
             </span>
           )}
         </div>
-        <p className="text-sm text-white font-medium line-clamp-2 leading-snug">
+        <p className="text-sm text-dark-text font-medium line-clamp-2 leading-snug">
           {item.title}
         </p>
         {item.tags.length > 0 && (
@@ -172,7 +172,7 @@ function FeedRowItem({
         >
           <Heart
             size={14}
-            className={isLiked ? 'text-red-500' : 'text-dark-text hover:text-white'}
+            className={isLiked ? 'text-red-500' : 'text-dark-text hover:text-dark-text'}
             fill={isLiked ? 'currentColor' : 'none'}
           />
         </button>
@@ -183,7 +183,7 @@ function FeedRowItem({
         >
           <Bookmark
             size={14}
-            className={isSaved ? 'text-brand-orange' : 'text-dark-text hover:text-white'}
+            className={isSaved ? 'text-brand-orange' : 'text-dark-text hover:text-dark-text'}
             fill={isSaved ? 'currentColor' : 'none'}
           />
         </button>
@@ -192,7 +192,7 @@ function FeedRowItem({
           className="p-1 rounded transition-colors"
           aria-label="Partager"
         >
-          <Share2 size={14} className="text-dark-text hover:text-white" />
+          <Share2 size={14} className="text-dark-text hover:text-dark-text" />
         </button>
       </div>
     </button>
@@ -240,11 +240,11 @@ function ContentPreview({
           <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-4">
             <div className="bg-surface-2 border border-brand-orange/30 rounded-2xl p-6 text-center max-w-xs">
               <Lock size={36} className="text-brand-orange mx-auto mb-3" />
-              <p className="font-semibold text-white mb-1">Contenu Premium</p>
+              <p className="font-semibold text-dark-text mb-1">Contenu Premium</p>
               <p className="text-sm text-dark-text mb-4">Abonne-toi pour accéder à tout le contenu</p>
               <button
                 onClick={() => router.push('/billing')}
-                className="bg-brand-orange hover:bg-brand-orange-dark text-white px-5 py-2 rounded-lg font-semibold text-sm transition-colors"
+                className="bg-brand-orange hover:bg-brand-orange-dark text-dark-text px-5 py-2 rounded-lg font-semibold text-sm transition-colors"
               >
                 Voir les offres
               </button>
@@ -261,12 +261,12 @@ function ContentPreview({
           >
             {item.videoUrl ? (
               <div className="w-14 h-14 bg-brand-orange/90 group-hover:bg-brand-orange rounded-full flex items-center justify-center transition-colors shadow-modal">
-                <Play size={24} fill="white" className="text-white ml-0.5" />
+                <Play size={24} fill="white" className="text-dark-text ml-0.5" />
               </div>
             ) : (
               <button
                 onClick={() => router.push(`/content/${item.id}`)}
-                className="bg-white/10 hover:bg-white/20 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors backdrop-blur-sm"
+                className="bg-white/10 hover:bg-white/20 text-dark-text text-sm font-medium px-5 py-2.5 rounded-xl transition-colors backdrop-blur-sm"
               >
                 Voir le contenu →
               </button>
@@ -298,7 +298,7 @@ function ContentPreview({
           )}
         </div>
 
-        <h2 className="text-lg font-bold text-white mb-2">{item.title}</h2>
+        <h2 className="text-lg font-bold text-dark-text mb-2">{item.title}</h2>
         {item.description && (
           <p className="text-dark-text text-sm leading-relaxed mb-4">{item.description}</p>
         )}
@@ -316,7 +316,7 @@ function ContentPreview({
 
         <button
           onClick={() => router.push(`/content/${item.id}`)}
-          className="w-full bg-brand-orange hover:bg-brand-orange-dark text-white font-semibold py-3 rounded-xl transition-colors"
+          className="w-full bg-brand-orange hover:bg-brand-orange-dark text-dark-text font-semibold py-3 rounded-xl transition-colors"
         >
           Ouvrir le contenu complet →
         </button>
@@ -458,8 +458,8 @@ export default function HomePage() {
               className={clsx(
                 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all flex-shrink-0',
                 filter === id
-                  ? 'bg-brand-orange text-white'
-                  : 'bg-surface-2 text-dark-text hover:text-white hover:bg-surface-3 border border-dark-border',
+                  ? 'bg-brand-orange text-dark-text'
+                  : 'bg-surface-2 text-dark-text hover:text-dark-text hover:bg-surface-3 border border-dark-border',
               )}
             >
               <Icon size={11} aria-hidden="true" />

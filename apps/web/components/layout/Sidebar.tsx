@@ -50,7 +50,7 @@ export function Sidebar({ compact = false, onToggle }: SidebarProps) {
         )}
       >
         <div className="w-8 h-8 bg-brand-orange rounded-lg flex items-center justify-center flex-shrink-0">
-          <span className="text-white font-black text-sm">J</span>
+          <span className="text-dark-text font-black text-sm">J</span>
         </div>
         {!compact && (
           <span className="text-gray-800 font-bold text-lg tracking-tight">JAMBAAR</span>
@@ -82,7 +82,7 @@ export function Sidebar({ compact = false, onToggle }: SidebarProps) {
                   aria-hidden="true"
                 />
                 {hasNotif && (
-                  <span className="absolute -top-1 -right-1 bg-brand-orange text-white text-[9px] rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5 font-bold">
+                  <span className="absolute -top-1 -right-1 bg-brand-orange text-dark-text text-[9px] rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5 font-bold">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </span>
                 )}

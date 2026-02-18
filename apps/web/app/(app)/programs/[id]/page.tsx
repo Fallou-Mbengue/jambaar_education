@@ -106,12 +106,12 @@ export default function ProgramDetailPage() {
         <div className="flex items-center gap-3 px-4 py-3 border-b border-dark-border flex-shrink-0">
           <button
             onClick={() => router.push('/programs')}
-            className="text-dark-text hover:text-white transition-colors"
+            className="text-dark-text hover:text-dark-text transition-colors"
             aria-label="Retour aux programmes"
           >
             <ArrowLeft size={18} />
           </button>
-          <h1 className="text-sm font-semibold text-white truncate flex-1">{program.title}</h1>
+          <h1 className="text-sm font-semibold text-dark-text truncate flex-1">{program.title}</h1>
         </div>
 
         {/* Stats bar */}
@@ -175,7 +175,7 @@ export default function ProgramDetailPage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-white line-clamp-1">{mod.title}</p>
+                  <p className="text-xs font-medium text-dark-text line-clamp-1">{mod.title}</p>
                   <p className="text-[10px] text-dark-text mt-0.5">
                     Module {idx + 1}
                     {mod.content?.durationSeconds
@@ -197,7 +197,7 @@ export default function ProgramDetailPage() {
             <button
               onClick={() => enrollMutation.mutate()}
               disabled={enrollMutation.isPending}
-              className="w-full bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl py-2.5 text-sm font-semibold transition-colors disabled:opacity-50"
+              className="w-full bg-brand-orange hover:bg-brand-orange-dark text-dark-text rounded-xl py-2.5 text-sm font-semibold transition-colors disabled:opacity-50"
             >
               {enrollMutation.isPending ? 'Inscription...' : "S'inscrire au programme"}
             </button>
@@ -209,10 +209,10 @@ export default function ProgramDetailPage() {
       <div className="flex-1 overflow-y-auto">
         {/* Mobile header */}
         <div className="md:hidden sticky top-0 z-10 bg-dark-bg/80 backdrop-blur px-4 py-3 flex items-center gap-3 border-b border-dark-border">
-          <button onClick={() => router.back()} className="text-dark-text hover:text-white">
+          <button onClick={() => router.back()} className="text-dark-text hover:text-dark-text">
             <ArrowLeft size={20} />
           </button>
-          <h1 className="text-white font-semibold flex-1 line-clamp-1">{program.title}</h1>
+          <h1 className="text-dark-text font-semibold flex-1 line-clamp-1">{program.title}</h1>
         </div>
 
         {displayModule ? (
@@ -223,7 +223,7 @@ export default function ProgramDetailPage() {
                 <p className="text-xs text-dark-text uppercase tracking-wide mb-1">
                   Module {modules.indexOf(displayModule) + 1} / {modules.length}
                 </p>
-                <h2 className="text-xl font-bold text-white">{displayModule.title}</h2>
+                <h2 className="text-xl font-bold text-dark-text">{displayModule.title}</h2>
               </div>
               {displayModule.userCompleted && (
                 <span className="flex items-center gap-1.5 text-brand-green text-sm font-medium flex-shrink-0">
@@ -249,7 +249,7 @@ export default function ProgramDetailPage() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   {displayModule.content.durationSeconds && (
-                    <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 text-white text-xs px-2 py-1 rounded-lg">
+                    <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-black/60 text-dark-text text-xs px-2 py-1 rounded-lg">
                       <Clock size={10} />
                       {Math.ceil(displayModule.content.durationSeconds / 60)} min
                     </div>
@@ -265,7 +265,7 @@ export default function ProgramDetailPage() {
                     <Link href={`/content/${displayModule.contentId}`}>
                       <button
                         onClick={() => progressMutation.mutate({ moduleId: displayModule.id, completed: false })}
-                        className="w-full bg-brand-orange hover:bg-brand-orange-dark text-white font-semibold py-3 rounded-xl transition-colors"
+                        className="w-full bg-brand-orange hover:bg-brand-orange-dark text-dark-text font-semibold py-3 rounded-xl transition-colors"
                       >
                         {displayModule.userCompleted ? '↺ Revoir ce module' : '▶ Commencer ce module'}
                       </button>
@@ -277,7 +277,7 @@ export default function ProgramDetailPage() {
 
             {/* Mobile modules list */}
             <div className="md:hidden">
-              <h3 className="text-sm font-semibold text-white mb-3 uppercase tracking-wide">
+              <h3 className="text-sm font-semibold text-dark-text mb-3 uppercase tracking-wide">
                 Tous les modules
               </h3>
               <div className="space-y-2">
@@ -308,7 +308,7 @@ export default function ProgramDetailPage() {
                           <Lock size={12} className="text-dark-text" />
                         )}
                       </div>
-                      <p className="text-sm text-white font-medium line-clamp-1 flex-1">{mod.title}</p>
+                      <p className="text-sm text-dark-text font-medium line-clamp-1 flex-1">{mod.title}</p>
                     </button>
                   );
                 })}
@@ -321,7 +321,7 @@ export default function ProgramDetailPage() {
                 <button
                   onClick={() => enrollMutation.mutate()}
                   disabled={enrollMutation.isPending}
-                  className="w-full bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl py-3 font-semibold transition-colors disabled:opacity-50"
+                  className="w-full bg-brand-orange hover:bg-brand-orange-dark text-dark-text rounded-xl py-3 font-semibold transition-colors disabled:opacity-50"
                 >
                   {enrollMutation.isPending ? 'Inscription...' : "S'inscrire au programme"}
                 </button>
@@ -336,7 +336,7 @@ export default function ProgramDetailPage() {
                 <BookOpen size={26} className="text-brand-orange" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white mb-1">{program.title}</h2>
+                <h2 className="text-xl font-bold text-dark-text mb-1">{program.title}</h2>
                 {program.description && (
                   <p className="text-dark-text text-sm leading-relaxed">{program.description}</p>
                 )}
@@ -354,13 +354,13 @@ export default function ProgramDetailPage() {
             <div className="grid grid-cols-2 gap-3 mb-6">
               <div className="card p-4 text-center">
                 <Layers size={18} className="text-brand-orange mx-auto mb-1.5" />
-                <p className="text-lg font-bold text-white">{modules.length}</p>
+                <p className="text-lg font-bold text-dark-text">{modules.length}</p>
                 <p className="text-[11px] text-dark-text">modules</p>
               </div>
               {program.durationDays && (
                 <div className="card p-4 text-center">
                   <Clock size={18} className="text-brand-gold mx-auto mb-1.5" />
-                  <p className="text-lg font-bold text-white">{program.durationDays}</p>
+                  <p className="text-lg font-bold text-dark-text">{program.durationDays}</p>
                   <p className="text-[11px] text-dark-text">jours</p>
                 </div>
               )}
@@ -370,7 +370,7 @@ export default function ProgramDetailPage() {
               <button
                 onClick={() => enrollMutation.mutate()}
                 disabled={enrollMutation.isPending}
-                className="w-full bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl py-3 font-semibold transition-colors disabled:opacity-50"
+                className="w-full bg-brand-orange hover:bg-brand-orange-dark text-dark-text rounded-xl py-3 font-semibold transition-colors disabled:opacity-50"
               >
                 {enrollMutation.isPending ? 'Inscription...' : "S'inscrire au programme"}
               </button>

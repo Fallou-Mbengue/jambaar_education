@@ -87,7 +87,7 @@ export function WebShell({ children }: WebShellProps) {
                       aria-hidden="true"
                     />
                     {hasNotif && (
-                      <span className="absolute -top-1 -right-1 bg-brand-orange text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 font-bold">
+                      <span className="absolute -top-1 -right-1 bg-brand-orange text-dark-text text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 font-bold">
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}

@@ -75,7 +75,7 @@ export default function OnboardingPage() {
                 onClick={() => toggleObjective(obj.value)}
                 className={`w-full text-left px-4 py-4 rounded-xl border transition-all ${
                   objectives.includes(obj.value)
-                    ? 'border-brand-orange bg-brand-orange/10 text-white'
+                    ? 'border-brand-orange bg-brand-orange/10 text-dark-text'
                     : 'border-white/10 bg-white/5 text-dark-text hover:border-white/30'
                 }`}
               >
@@ -103,7 +103,7 @@ export default function OnboardingPage() {
               >
                 <span className="text-2xl">{lvl.icon}</span>
                 <div>
-                  <div className="font-semibold text-white">{lvl.label}</div>
+                  <div className="font-semibold text-dark-text">{lvl.label}</div>
                   <div className="text-sm text-dark-text">{lvl.desc}</div>
                 </div>
               </button>
@@ -124,7 +124,7 @@ export default function OnboardingPage() {
                 className={`px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
                   interests.includes(interest.value)
                     ? 'border-brand-orange bg-brand-orange/10 text-brand-orange'
-                    : 'border-white/10 bg-white/5 text-dark-text hover:border-white/30 hover:text-white'
+                    : 'border-white/10 bg-white/5 text-dark-text hover:border-white/30 hover:text-dark-text'
                 }`}
               >
                 {interest.label}
@@ -139,7 +139,7 @@ export default function OnboardingPage() {
         {step > 1 && (
           <button
             onClick={() => setStep((s) => s - 1)}
-            className="flex-1 py-3 rounded-xl border border-white/10 text-white"
+            className="flex-1 py-3 rounded-xl border border-white/10 text-dark-text"
           >
             Retour
           </button>
@@ -161,7 +161,7 @@ export default function OnboardingPage() {
             (step === 3 && interests.length < 1) ||
             loading
           }
-          className="flex-1 bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-40 text-white font-semibold py-3 rounded-xl transition-colors"
+          className="flex-1 bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-40 text-dark-text font-semibold py-3 rounded-xl transition-colors"
         >
           {step === 3 ? (loading ? 'Chargement...' : 'Commencer 🚀') : 'Continuer'}
         </button>

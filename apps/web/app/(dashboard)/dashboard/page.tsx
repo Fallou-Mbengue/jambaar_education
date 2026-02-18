@@ -27,9 +27,9 @@ function StatCard({
   return (
     <div className="glass rounded-xl p-4">
       <div className={`inline-flex p-2 rounded-lg mb-3 ${color}`}>
-        <Icon size={20} className="text-white" />
+        <Icon size={20} className="text-dark-text" />
       </div>
-      <div className="text-2xl font-bold text-white">{value}</div>
+      <div className="text-2xl font-bold text-dark-text">{value}</div>
       <div className="text-sm text-dark-text">{label}</div>
       {sub && <div className="text-xs text-brand-green mt-1">{sub}</div>}
     </div>
@@ -57,7 +57,7 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Vue Globale</h1>
+        <h1 className="text-2xl font-bold text-dark-text">Vue Globale</h1>
         <p className="text-dark-text mt-1">Indicateurs clés de performance</p>
       </div>
 
@@ -94,14 +94,14 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="glass rounded-xl p-4">
-          <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="font-semibold text-dark-text mb-3 flex items-center gap-2">
             <BookOpen size={18} className="text-brand-orange" />
             Contenus
           </h3>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-dark-text">Total</span>
-              <span className="text-white font-medium">{kpis?.content.total ?? 0}</span>
+              <span className="text-dark-text font-medium">{kpis?.content.total ?? 0}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-dark-text">Publiés</span>
@@ -111,14 +111,14 @@ export default function DashboardPage() {
         </div>
 
         <div className="glass rounded-xl p-4">
-          <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="font-semibold text-dark-text mb-3 flex items-center gap-2">
             <Flame size={18} className="text-brand-orange" />
             Engagement
           </h3>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-dark-text">Actifs 7j</span>
-              <span className="text-white font-medium">{kpis?.users.active7d ?? 0}</span>
+              <span className="text-dark-text font-medium">{kpis?.users.active7d ?? 0}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-dark-text">Streak moyen</span>

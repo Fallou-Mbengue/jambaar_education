@@ -35,7 +35,7 @@ export default function DashboardUsersPage() {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Utilisateurs</h1>
+        <h1 className="text-2xl font-bold text-dark-text">Utilisateurs</h1>
         <span className="text-dark-text text-sm">{data?.total ?? 0} au total</span>
       </div>
 
@@ -46,7 +46,7 @@ export default function DashboardUsersPage() {
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           placeholder="Rechercher par nom ou email..."
-          className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors text-sm"
+          className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors text-sm"
         />
       </div>
 
@@ -72,7 +72,7 @@ export default function DashboardUsersPage() {
               (data?.items ?? []).map((user: UserItem) => (
                 <tr key={user.id} className="border-b border-white/5 hover:bg-white/3 transition-colors">
                   <td className="px-4 py-3">
-                    <div className="font-medium text-white">
+                    <div className="font-medium text-dark-text">
                       {user.profile?.firstName} {user.profile?.lastName}
                     </div>
                     <div className="text-dark-text text-xs">{user.email}</div>
@@ -83,7 +83,7 @@ export default function DashboardUsersPage() {
                     </span>
                     <div className="text-dark-text text-xs">{user.gamification?.totalXp ?? 0} XP</div>
                   </td>
-                  <td className="px-4 py-3 text-white">{user.completedContent}</td>
+                  <td className="px-4 py-3 text-dark-text">{user.completedContent}</td>
                   <td className="px-4 py-3">
                     <span className="text-brand-orange">🔥 {user.gamification?.currentStreak ?? 0}</span>
                   </td>

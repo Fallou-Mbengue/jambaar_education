@@ -124,11 +124,11 @@ export function FeedItem({ item, isActive, hasSubscription }: FeedItemProps) {
         <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-4 z-20">
           <div className="bg-brand-orange/20 border border-brand-orange/50 rounded-2xl p-6 text-center">
             <Lock size={40} className="text-brand-orange mx-auto mb-3" />
-            <p className="font-semibold text-white">Contenu Premium</p>
+            <p className="font-semibold text-dark-text">Contenu Premium</p>
             <p className="text-sm text-dark-text mt-1">Abonne-toi pour accéder</p>
             <button
               onClick={() => router.push('/billing')}
-              className="mt-4 bg-brand-orange text-white px-6 py-2 rounded-xl font-semibold text-sm"
+              className="mt-4 bg-brand-orange text-dark-text px-6 py-2 rounded-xl font-semibold text-sm"
             >
               S&apos;abonner
             </button>
@@ -144,7 +144,7 @@ export function FeedItem({ item, isActive, hasSubscription }: FeedItemProps) {
               PREMIUM
             </span>
           )}
-          <span className="bg-white/10 text-white text-xs px-2 py-0.5 rounded">
+          <span className="bg-white/10 text-dark-text text-xs px-2 py-0.5 rounded">
             {item.type.replace('_', ' ')}
           </span>
           {item.durationSeconds && (
@@ -153,7 +153,7 @@ export function FeedItem({ item, isActive, hasSubscription }: FeedItemProps) {
         </div>
 
         <h2
-          className="text-white font-bold text-lg leading-tight cursor-pointer"
+          className="text-dark-text font-bold text-lg leading-tight cursor-pointer"
           onClick={() => router.push(`/content/${item.id}`)}
         >
           {item.title}
@@ -172,24 +172,24 @@ export function FeedItem({ item, isActive, hasSubscription }: FeedItemProps) {
       {/* Action buttons */}
       <div className="absolute right-4 bottom-28 z-10 flex flex-col items-center gap-6">
         <button onClick={handleLike} className="flex flex-col items-center gap-1">
-          <div className={`p-2 rounded-full ${isLiked ? 'text-red-500' : 'text-white'} transition-colors`}>
+          <div className={`p-2 rounded-full ${isLiked ? 'text-red-500' : 'text-dark-text'} transition-colors`}>
             <Heart size={28} fill={isLiked ? 'currentColor' : 'none'} />
           </div>
-          <span className="text-white text-xs font-medium">{likeCount}</span>
+          <span className="text-dark-text text-xs font-medium">{likeCount}</span>
         </button>
 
         <button onClick={handleSave} className="flex flex-col items-center gap-1">
-          <div className={`p-2 rounded-full ${isSaved ? 'text-brand-orange' : 'text-white'} transition-colors`}>
+          <div className={`p-2 rounded-full ${isSaved ? 'text-brand-orange' : 'text-dark-text'} transition-colors`}>
             <Bookmark size={28} fill={isSaved ? 'currentColor' : 'none'} />
           </div>
-          <span className="text-white text-xs font-medium">Sauv.</span>
+          <span className="text-dark-text text-xs font-medium">Sauv.</span>
         </button>
 
         <button onClick={handleShare} className="flex flex-col items-center gap-1">
-          <div className="p-2 rounded-full text-white">
+          <div className="p-2 rounded-full text-dark-text">
             <Share2 size={28} />
           </div>
-          <span className="text-white text-xs font-medium">Part.</span>
+          <span className="text-dark-text text-xs font-medium">Part.</span>
         </button>
 
         {item.videoUrl && !isPlaying && !isPremiumLocked && (
@@ -200,7 +200,7 @@ export function FeedItem({ item, isActive, hasSubscription }: FeedItemProps) {
             }}
             className="p-3 bg-white/20 rounded-full"
           >
-            <Play size={24} className="text-white" fill="currentColor" />
+            <Play size={24} className="text-dark-text" fill="currentColor" />
           </button>
         )}
       </div>

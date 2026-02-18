@@ -89,7 +89,7 @@ export default function ChallengesPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un challenge..."
-            className="w-full bg-surface-2 border border-dark-border rounded-lg pl-8 pr-3 py-2 text-sm text-white placeholder-dark-text focus:outline-none focus:border-brand-orange/50 transition-colors"
+            className="w-full bg-surface-2 border border-dark-border rounded-lg pl-8 pr-3 py-2 text-sm text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange/50 transition-colors"
             aria-label="Rechercher"
           />
         </div>
@@ -101,8 +101,8 @@ export default function ChallengesPage() {
               className={clsx(
                 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap',
                 statusFilter === id
-                  ? 'bg-brand-orange text-white'
-                  : 'bg-surface-2 text-dark-text hover:text-white border border-dark-border',
+                  ? 'bg-brand-orange text-dark-text'
+                  : 'bg-surface-2 text-dark-text hover:text-dark-text border border-dark-border',
               )}
             >
               {label}
@@ -185,7 +185,7 @@ function ChallengeCard({ challenge }: { challenge: Challenge }) {
 
       {/* Body */}
       <div className="p-4">
-        <h3 className="font-semibold text-white text-sm leading-snug mb-1.5 group-hover:text-brand-orange transition-colors line-clamp-2">
+        <h3 className="font-semibold text-dark-text text-sm leading-snug mb-1.5 group-hover:text-brand-orange transition-colors line-clamp-2">
           {challenge.title}
         </h3>
         {challenge.description && (

@@ -17,7 +17,7 @@ export default function DashboardProgramsPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">Programmes</h1>
+        <h1 className="text-2xl font-bold text-dark-text">Programmes</h1>
       </div>
 
       {isLoading ? (
@@ -31,7 +31,7 @@ export default function DashboardProgramsPage() {
                   <BookOpen size={20} className="text-brand-orange" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-white font-medium">{program.title}</h3>
+                  <h3 className="text-dark-text font-medium">{program.title}</h3>
                   <p className="text-dark-text text-sm mt-1 line-clamp-2">{program.description}</p>
                   <div className="flex items-center gap-4 mt-3 text-xs text-dark-text">
                     <span className="flex items-center gap-1">

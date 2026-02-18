@@ -261,17 +261,17 @@ export default function ContentPage() {
       >
         <button
           onClick={() => router.back()}
-          className="text-dark-text hover:text-white transition-colors"
+          className="text-dark-text hover:text-dark-text transition-colors"
           aria-label="Retour"
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-white font-semibold flex-1 line-clamp-1 text-sm">{content.title}</h1>
+        <h1 className="text-dark-text font-semibold flex-1 line-clamp-1 text-sm">{content.title}</h1>
         <div className="flex items-center gap-2">
           {/* Theatre toggle */}
           <button
             onClick={() => setIsTheatre((p) => !p)}
-            className="p-1.5 rounded-lg text-dark-text hover:text-white hover:bg-surface-2 transition-colors hidden md:flex"
+            className="p-1.5 rounded-lg text-dark-text hover:text-dark-text hover:bg-surface-2 transition-colors hidden md:flex"
             aria-label={isTheatre ? 'Mode normal' : 'Mode théâtre'}
             title="Mode théâtre (f)"
           >
@@ -362,7 +362,7 @@ export default function ContentPage() {
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   {!isPlaying && (
                     <div className="w-16 h-16 bg-brand-orange/90 rounded-full flex items-center justify-center shadow-modal">
-                      <Play size={28} fill="white" className="text-white ml-1" />
+                      <Play size={28} fill="white" className="text-dark-text ml-1" />
                     </div>
                   )}
                 </div>
@@ -391,7 +391,7 @@ export default function ContentPage() {
                     {/* Play/pause */}
                     <button
                       onClick={() => isPlaying ? videoRef.current?.pause() : videoRef.current?.play()}
-                      className="text-white hover:text-brand-orange transition-colors"
+                      className="text-dark-text hover:text-brand-orange transition-colors"
                       aria-label={isPlaying ? 'Pause (Espace)' : 'Lecture (Espace)'}
                     >
                       {isPlaying ? <Pause size={18} /> : <Play size={18} />}
@@ -399,20 +399,20 @@ export default function ContentPage() {
                     {/* Rewind/forward */}
                     <button
                       onClick={() => { if (videoRef.current) videoRef.current.currentTime -= 10; }}
-                      className="text-white/70 hover:text-white transition-colors"
+                      className="text-dark-text/70 hover:text-dark-text transition-colors"
                       aria-label="Reculer 10s (←)"
                     >
                       <Rewind size={16} />
                     </button>
                     <button
                       onClick={() => { if (videoRef.current) videoRef.current.currentTime += 10; }}
-                      className="text-white/70 hover:text-white transition-colors"
+                      className="text-dark-text/70 hover:text-dark-text transition-colors"
                       aria-label="Avancer 10s (→)"
                     >
                       <FastForward size={16} />
                     </button>
                     {/* Time */}
-                    <span className="text-white/70 text-xs tabular-nums">
+                    <span className="text-dark-text/70 text-xs tabular-nums">
                       {formatTime(currentTime)} / {formatTime(duration)}
                     </span>
                     {/* Spacer */}
@@ -423,7 +423,7 @@ export default function ContentPage() {
                         setIsMuted((p) => !p);
                         if (videoRef.current) videoRef.current.muted = !videoRef.current.muted;
                       }}
-                      className="text-white/70 hover:text-white transition-colors"
+                      className="text-dark-text/70 hover:text-dark-text transition-colors"
                       aria-label={isMuted ? 'Activer le son (m)' : 'Couper le son (m)'}
                     >
                       {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
@@ -436,7 +436,7 @@ export default function ContentPage() {
                         setSpeed(s);
                         if (videoRef.current) videoRef.current.playbackRate = s;
                       }}
-                      className="bg-transparent text-white/70 text-xs border border-white/20 rounded px-1.5 py-0.5 hover:text-white focus:outline-none"
+                      className="bg-transparent text-dark-text/70 text-xs border border-white/20 rounded px-1.5 py-0.5 hover:text-dark-text focus:outline-none"
                       aria-label="Vitesse de lecture"
                     >
                       {[0.5, 0.75, 1, 1.25, 1.5, 2].map((s) => (
@@ -448,7 +448,7 @@ export default function ContentPage() {
                     {/* Theatre */}
                     <button
                       onClick={() => setIsTheatre((p) => !p)}
-                      className="text-white/70 hover:text-white transition-colors hidden md:block"
+                      className="text-dark-text/70 hover:text-dark-text transition-colors hidden md:block"
                       aria-label="Mode théâtre (f)"
                     >
                       {isTheatre ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
@@ -544,7 +544,7 @@ function TabsSection({
               'flex-1 py-3 text-xs font-medium transition-colors',
               activeTab === id
                 ? 'text-brand-orange border-b-2 border-brand-orange'
-                : 'text-dark-text hover:text-white',
+                : 'text-dark-text hover:text-dark-text',
             )}
           >
             {id === 'ai-summary' && <Sparkles size={10} className="inline mr-1" aria-hidden="true" />}
@@ -566,7 +566,7 @@ function TabsSection({
                 </span>
               )}
             </div>
-            <h2 className="text-base font-bold text-white">{content.title}</h2>
+            <h2 className="text-base font-bold text-dark-text">{content.title}</h2>
             <p className="text-dark-text text-sm leading-relaxed">{content.description}</p>
             {content.tags?.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -589,7 +589,7 @@ function TabsSection({
               <p className="text-dark-text text-sm text-center py-8">Aucun quiz disponible.</p>
             ) : (
               <>
-                <h3 className="text-white font-semibold text-sm leading-relaxed">{question.question}</h3>
+                <h3 className="text-dark-text font-semibold text-sm leading-relaxed">{question.question}</h3>
                 <div className="space-y-2.5">
                   {question.options.map((opt: string, idx: number) => {
                     let cls =
@@ -597,8 +597,8 @@ function TabsSection({
                     if (!showResult) {
                       cls +=
                         selectedAnswer === idx
-                          ? 'border-brand-orange bg-brand-orange/10 text-white'
-                          : 'border-dark-border text-dark-text hover:border-white/20 hover:text-white';
+                          ? 'border-brand-orange bg-brand-orange/10 text-dark-text'
+                          : 'border-dark-border text-dark-text hover:border-white/20 hover:text-dark-text';
                     } else if (idx === question.correctIndex) {
                       cls += 'border-brand-green bg-brand-green/10 text-brand-green';
                     } else if (idx === selectedAnswer) {
@@ -627,13 +627,13 @@ function TabsSection({
                     )}
                   >
                     {selectedAnswer === question.correctIndex ? '✅ Bonne réponse !' : '❌ Mauvaise réponse.'}
-                    <p className="text-white/70 mt-1.5 text-xs">{question.explanation}</p>
+                    <p className="text-dark-text/70 mt-1.5 text-xs">{question.explanation}</p>
                   </div>
                 )}
                 {!showResult && selectedAnswer !== null && (
                   <button
                     onClick={handleQuizSubmit}
-                    className="w-full bg-brand-orange hover:bg-brand-orange-dark text-white rounded-xl py-3 text-sm font-semibold transition-colors"
+                    className="w-full bg-brand-orange hover:bg-brand-orange-dark text-dark-text rounded-xl py-3 text-sm font-semibold transition-colors"
                   >
                     Valider ma réponse
                   </button>
@@ -647,7 +647,7 @@ function TabsSection({
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-brand-orange" />
-              <span className="text-xs font-semibold text-white uppercase tracking-wide">Résumé IA</span>
+              <span className="text-xs font-semibold text-dark-text uppercase tracking-wide">Résumé IA</span>
             </div>
             {loadingSummary ? (
               <div className="flex items-center gap-2 text-dark-text text-sm py-4">
@@ -656,7 +656,7 @@ function TabsSection({
               </div>
             ) : aiSummary ? (
               <div className="bg-surface-2 rounded-xl p-4 border border-dark-border">
-                <p className="text-white/80 text-sm leading-relaxed whitespace-pre-wrap">{aiSummary}</p>
+                <p className="text-dark-text/80 text-sm leading-relaxed whitespace-pre-wrap">{aiSummary}</p>
               </div>
             ) : (
               <p className="text-dark-text text-sm text-center py-8">Résumé non disponible.</p>

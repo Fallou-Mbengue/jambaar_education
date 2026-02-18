@@ -95,7 +95,7 @@ export default function BillingPage() {
           >
             <div className="flex items-center justify-between mb-2">
               <div>
-                <span className="font-bold text-white">{plan.name}</span>
+                <span className="font-bold text-dark-text">{plan.name}</span>
                 <span className="text-dark-text text-sm ml-2">
                   ({PERIOD_LABELS[plan.billingPeriod]})
                 </span>
@@ -121,7 +121,7 @@ export default function BillingPage() {
       {/* Payment method */}
       {selectedPlanId && (
         <div className="space-y-4">
-          <h2 className="font-semibold text-white">Mode de paiement</h2>
+          <h2 className="font-semibold text-dark-text">Mode de paiement</h2>
           <div className="grid grid-cols-2 gap-3">
             {(['WAVE', 'ORANGE_MONEY'] as const).map((p) => (
               <button
@@ -132,7 +132,7 @@ export default function BillingPage() {
                 }`}
               >
                 <div className="text-2xl mb-1">{p === 'WAVE' ? '🌊' : '🟠'}</div>
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm font-medium text-dark-text">
                   {p === 'WAVE' ? 'Wave' : 'Orange Money'}
                 </p>
               </button>
@@ -145,14 +145,14 @@ export default function BillingPage() {
               onChange={(e) => setPhone(e.target.value)}
               type="tel"
               placeholder="Numéro de téléphone"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
             />
           </div>
 
           <button
             onClick={handleSubscribe}
             disabled={!phone || loading}
-            className="w-full bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-40 text-white font-bold py-4 rounded-xl transition-colors"
+            className="w-full bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-40 text-dark-text font-bold py-4 rounded-xl transition-colors"
           >
             {loading ? 'Traitement...' : 'Confirmer le paiement'}
           </button>

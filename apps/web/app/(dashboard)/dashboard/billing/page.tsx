@@ -22,23 +22,23 @@ export default function DashboardBillingPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-white">Abonnements</h1>
+      <h1 className="text-2xl font-bold text-dark-text">Abonnements</h1>
 
       {/* KPI cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="glass rounded-xl p-4 text-center">
           <Users size={20} className="text-brand-orange mx-auto mb-2" />
-          <p className="text-2xl font-bold text-white">{total}</p>
+          <p className="text-2xl font-bold text-dark-text">{total}</p>
           <p className="text-dark-text text-xs">Total</p>
         </div>
         <div className="glass rounded-xl p-4 text-center">
           <CreditCard size={20} className="text-green-400 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-white">{active}</p>
+          <p className="text-2xl font-bold text-dark-text">{active}</p>
           <p className="text-dark-text text-xs">Actifs</p>
         </div>
         <div className="glass rounded-xl p-4 text-center">
           <TrendingUp size={20} className="text-blue-400 mx-auto mb-2" />
-          <p className="text-2xl font-bold text-white">{(revenue / 1000).toFixed(1)}k</p>
+          <p className="text-2xl font-bold text-dark-text">{(revenue / 1000).toFixed(1)}k</p>
           <p className="text-dark-text text-xs">XOF / mois</p>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function DashboardBillingPage() {
             <tbody>
               {subscriptions.map((sub: any) => (
                 <tr key={sub.id} className="border-b border-white/5 hover:bg-white/2">
-                  <td className="py-3 px-4 text-white">
+                  <td className="py-3 px-4 text-dark-text">
                     {sub.user?.profile?.displayName ?? sub.user?.email ?? '-'}
                   </td>
                   <td className="py-3 px-4 text-dark-text">{sub.plan?.name ?? '-'}</td>

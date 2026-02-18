@@ -94,7 +94,7 @@ export default function ProgramsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un programme..."
-            className="w-full bg-surface-2 border border-dark-border rounded-lg pl-8 pr-3 py-2 text-sm text-white placeholder-dark-text focus:outline-none focus:border-brand-orange/50 transition-colors"
+            className="w-full bg-surface-2 border border-dark-border rounded-lg pl-8 pr-3 py-2 text-sm text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange/50 transition-colors"
             aria-label="Rechercher"
           />
         </div>
@@ -107,8 +107,8 @@ export default function ProgramsPage() {
               className={clsx(
                 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
                 sort === s
-                  ? 'bg-brand-orange text-white'
-                  : 'bg-surface-2 text-dark-text hover:text-white border border-dark-border',
+                  ? 'bg-brand-orange text-dark-text'
+                  : 'bg-surface-2 text-dark-text hover:text-dark-text border border-dark-border',
               )}
             >
               {s === 'recent' ? 'Récents' : s === 'progress' ? 'En cours' : 'Durée'}
@@ -124,7 +124,7 @@ export default function ProgramsPage() {
             onClick={() => setSelectedTag(null)}
             className={clsx(
               'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex-shrink-0',
-              !selectedTag ? 'bg-white text-black' : 'bg-surface-2 text-dark-text hover:text-white border border-dark-border',
+              !selectedTag ? 'bg-white text-black' : 'bg-surface-2 text-dark-text hover:text-dark-text border border-dark-border',
             )}
           >
             Tous
@@ -136,8 +136,8 @@ export default function ProgramsPage() {
               className={clsx(
                 'px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all flex-shrink-0',
                 selectedTag === tag
-                  ? 'bg-brand-orange text-white'
-                  : 'bg-surface-2 text-dark-text hover:text-white border border-dark-border',
+                  ? 'bg-brand-orange text-dark-text'
+                  : 'bg-surface-2 text-dark-text hover:text-dark-text border border-dark-border',
               )}
             >
               #{tag}
@@ -237,7 +237,7 @@ function ProgramCard({ program }: { program: Program }) {
 
       {/* Body */}
       <div className="p-4">
-        <h3 className="font-semibold text-white text-sm leading-snug mb-1 group-hover:text-brand-orange transition-colors line-clamp-2">
+        <h3 className="font-semibold text-dark-text text-sm leading-snug mb-1 group-hover:text-brand-orange transition-colors line-clamp-2">
           {program.title}
         </h3>
         {program.description && (
@@ -290,7 +290,7 @@ function ProgramCard({ program }: { program: Program }) {
           >
             {isCompleted ? '✓ Complété' : isInProgress ? 'Continuer' : 'Commencer'}
           </span>
-          <ChevronRight size={14} className="text-dark-text group-hover:text-white transition-colors" aria-hidden="true" />
+          <ChevronRight size={14} className="text-dark-text group-hover:text-dark-text transition-colors" aria-hidden="true" />
         </div>
       </div>
     </Link>

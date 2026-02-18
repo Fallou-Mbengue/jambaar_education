@@ -75,7 +75,7 @@ export default function ProfilePage() {
           <div className="flex items-end justify-between -mt-8 mb-4">
             <div className="w-16 h-16 bg-surface-2 rounded-2xl border-2 border-dark-card flex items-center justify-center text-2xl relative">
               <span role="img" aria-label={`Niveau ${level}`}>{cfg.icon}</span>
-              <div className="absolute -bottom-1 -right-1 bg-brand-orange text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+              <div className="absolute -bottom-1 -right-1 bg-brand-orange text-dark-text text-[9px] font-black px-1.5 py-0.5 rounded-full">
                 {level.toUpperCase()}
               </div>
             </div>
@@ -87,7 +87,7 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          <h2 className="text-lg font-bold text-white">{displayName}</h2>
+          <h2 className="text-lg font-bold text-dark-text">{displayName}</h2>
           <p className="text-dark-text text-sm">{user?.email}</p>
           {user?.profile?.jobTitle && (
             <p className="text-dark-text text-xs mt-0.5">{user.profile.jobTitle}</p>
@@ -127,7 +127,7 @@ export default function ProfilePage() {
             <div className={clsx('w-9 h-9 rounded-xl flex items-center justify-center mb-2', bg)}>
               <Icon size={18} className={color} aria-hidden="true" />
             </div>
-            <p className="text-xl font-bold text-white">{value}</p>
+            <p className="text-xl font-bold text-dark-text">{value}</p>
             <p className="text-[11px] text-dark-text mt-0.5">{label}</p>
           </div>
         ))}
@@ -136,7 +136,7 @@ export default function ProfilePage() {
       {/* ── Badges ── */}
       {(gamification?.badges?.length ?? 0) > 0 && (
         <div className="card p-4 mb-5">
-          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-dark-text mb-3 flex items-center gap-2">
             <Trophy size={14} className="text-brand-gold" />
             Mes Badges ({gamification!.badges.length})
           </h3>
@@ -150,7 +150,7 @@ export default function ProfilePage() {
                 <div className="w-10 h-10 bg-brand-gold/15 rounded-xl flex items-center justify-center">
                   <Crown size={18} className="text-brand-gold" aria-hidden="true" />
                 </div>
-                <p className="text-[10px] font-medium text-white text-center line-clamp-2 leading-tight">
+                <p className="text-[10px] font-medium text-dark-text text-center line-clamp-2 leading-tight">
                   {badge.name}
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default function ProfilePage() {
 
       {/* ── Quick actions ── */}
       <div className="card p-4 mb-5">
-        <h3 className="text-sm font-semibold text-white mb-3">Actions rapides</h3>
+        <h3 className="text-sm font-semibold text-dark-text mb-3">Actions rapides</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {[
             { href: '/programs', icon: BookOpen, label: 'Mes Programmes', desc: 'Voir ta progression', color: 'text-brand-orange' },
@@ -178,7 +178,7 @@ export default function ProfilePage() {
                 <Icon size={16} className={color} aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white group-hover:text-brand-orange transition-colors">{label}</p>
+                <p className="text-sm font-medium text-dark-text group-hover:text-brand-orange transition-colors">{label}</p>
                 <p className="text-[10px] text-dark-text mt-0.5">{desc}</p>
               </div>
             </button>

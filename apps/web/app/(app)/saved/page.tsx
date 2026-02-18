@@ -41,7 +41,7 @@ export default function SavedPage() {
                   <span className="text-xl">📹</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-white line-clamp-1">{content.title}</h3>
+                  <h3 className="font-medium text-dark-text line-clamp-1">{content.title}</h3>
                   <p className="text-xs text-dark-text mt-0.5">
                     {content.type} {content.durationSeconds && `• ${Math.ceil(content.durationSeconds / 60)} min`}
                   </p>

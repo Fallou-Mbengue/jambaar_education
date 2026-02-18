@@ -99,7 +99,7 @@ export default function AssistantPage() {
             <Sparkles size={18} className="text-brand-orange" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="font-bold text-white text-sm">Jam — Assistant IA</h1>
+            <h1 className="font-bold text-dark-text text-sm">Jam — Assistant IA</h1>
             <p className="text-[11px] text-brand-green flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-brand-green rounded-full inline-block" aria-hidden="true" />
               En ligne
@@ -117,7 +117,7 @@ export default function AssistantPage() {
               <button
                 key={p.id}
                 onClick={() => sendMessage(p.message)}
-                className="flex items-center gap-1.5 bg-surface-2 hover:bg-surface-3 border border-dark-border text-white text-xs px-3 py-2 rounded-full whitespace-nowrap transition-all hover:border-brand-orange/30 flex-shrink-0"
+                className="flex items-center gap-1.5 bg-surface-2 hover:bg-surface-3 border border-dark-border text-dark-text text-xs px-3 py-2 rounded-full whitespace-nowrap transition-all hover:border-brand-orange/30 flex-shrink-0"
               >
                 <Sparkles size={10} className="text-brand-orange" aria-hidden="true" />
                 {p.label}
@@ -142,8 +142,8 @@ export default function AssistantPage() {
                 className={clsx(
                   'max-w-[80%] md:max-w-[65%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap',
                   msg.role === 'user'
-                    ? 'bg-brand-orange text-white rounded-br-sm'
-                    : 'bg-surface-2 border border-dark-border text-white rounded-bl-sm',
+                    ? 'bg-brand-orange text-dark-text rounded-br-sm'
+                    : 'bg-surface-2 border border-dark-border text-dark-text rounded-bl-sm',
                 )}
               >
                 {msg.content}
@@ -186,7 +186,7 @@ export default function AssistantPage() {
               <button
                 key={p.id}
                 onClick={() => sendMessage(p.message)}
-                className="bg-surface-2 border border-dark-border text-white text-xs px-3 py-2 rounded-full whitespace-nowrap flex-shrink-0"
+                className="bg-surface-2 border border-dark-border text-dark-text text-xs px-3 py-2 rounded-full whitespace-nowrap flex-shrink-0"
               >
                 {p.label}
               </button>
@@ -203,7 +203,7 @@ export default function AssistantPage() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Pose ta question à Jam..."
-              className="flex-1 bg-transparent text-white placeholder-dark-text text-sm focus:outline-none resize-none max-h-32 min-h-[24px]"
+              className="flex-1 bg-transparent text-dark-text placeholder-dark-text text-sm focus:outline-none resize-none max-h-32 min-h-[24px]"
               disabled={loading}
               rows={1}
               aria-label="Message à envoyer"
@@ -227,7 +227,7 @@ export default function AssistantPage() {
           aria-label="Contenus recommandés"
         >
           <div className="px-4 py-3 border-b border-dark-border flex-shrink-0">
-            <p className="text-xs font-semibold text-white uppercase tracking-wide">
+            <p className="text-xs font-semibold text-dark-text uppercase tracking-wide">
               Contenus recommandés
             </p>
             <p className="text-[10px] text-dark-text mt-0.5">
@@ -254,7 +254,7 @@ export default function AssistantPage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-white line-clamp-2 group-hover:text-brand-orange transition-colors">
+                  <p className="text-xs font-medium text-dark-text line-clamp-2 group-hover:text-brand-orange transition-colors">
                     {content.title}
                   </p>
                   <p className="text-[10px] text-dark-text mt-0.5 flex items-center gap-1">
