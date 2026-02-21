@@ -37,6 +37,74 @@ export class ProgramsService {
     );
   }
 
+  async findByIdPublic(programId: string) {
+    const program = await this.prisma.program.findUnique({
+      where: { id: programId, status: 'ACTIVE' },
+      include: {
+        modules: {
+          include: {
+            course: {
+              include: {
+                modules: {
+                  include: { content: true },
+                  orderBy: { order: 'asc' },
+                },
+              },
+            },
+          },
+          orderBy: { order: 'asc' },
+        },
+      },
+    });
+    if (!program) throw new NotFoundException('Program not found');
+
+    const [thumbnailUrl, participantCount] = await Promise.all([
+      program.thumbnailKey
+        ? this.minio.getPresignedReadUrl(program.thumbnailKey)
+        : Promise.resolve(null),
+      this.prisma.userProgress.count({ where: { programId } }),
+    ]);
+
+    const curriculum = program.modules.map((pm) => ({
+      id: pm.id,
+      order: pm.order,
+      title: pm.title || pm.course.title,
+      courseId: pm.courseId,
+      lessons: pm.course.modules.map((m) => ({
+        id: m.id,
+        order: m.order,
+        title: m.title,
+        durationSeconds: m.content?.durationSeconds ?? null,
+        contentId: m.contentId,
+      })),
+      totalDurationSeconds: pm.course.modules.reduce(
+        (acc, m) => acc + (m.content?.durationSeconds ?? 0),
+        0,
+      ),
+    }));
+
+    const totalDurationSeconds = curriculum.reduce(
+      (acc, ch) => acc + ch.totalDurationSeconds,
+      0,
+    );
+
+    return {
+      id: program.id,
+      title: program.title,
+      description: program.description,
+      isPremium: program.isPremium,
+      durationDays: program.durationDays,
+      tags: program.tags,
+      status: program.status,
+      createdAt: program.createdAt,
+      thumbnailUrl,
+      participantCount,
+      totalDurationSeconds,
+      curriculum,
+      _count: { modules: program.modules.length },
+    };
+  }
+
   async findAll(userId: string) {
     const programs = await this.prisma.program.findMany({
       where: { status: 'ACTIVE' },

@@ -2,3 +2,4 @@ export { Skeleton, FeedItemSkeleton, ProgramCardSkeleton, TableRowSkeleton, Page
 export { EmptyState } from './EmptyState';
 export { Badge, ContentTypeBadge, PremiumBadge, StatusBadge } from './Badge';
 export { PageHeader } from './PageHeader';
+export { JambaarLogo } from './JambaarLogo';

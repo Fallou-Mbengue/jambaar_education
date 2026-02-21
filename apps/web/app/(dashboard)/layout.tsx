@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { authApi } from '@/lib/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
+import { JambaarLogo } from '@/components/ui';
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Vue globale' },
@@ -43,8 +44,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <aside className="w-56 glass border-r border-white/10 flex flex-col py-6 flex-shrink-0">
         <div className="px-4 mb-8">
-          <div className="text-brand-orange font-bold text-xl">JAMBAAR</div>
-          <div className="text-xs text-dark-text mt-0.5">Dashboard B2B</div>
+          <JambaarLogo size="md" href="/dashboard" />
+          <div className="text-xs text-dark-text mt-1">Dashboard B2B</div>
         </div>
 
         <nav className="flex-1 px-3 space-y-1">

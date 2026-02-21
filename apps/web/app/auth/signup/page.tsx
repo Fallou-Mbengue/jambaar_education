@@ -8,6 +8,7 @@ import { z } from 'zod';
 import Link from 'next/link';
 import { authApi } from '@/lib/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
+import { JambaarLogo } from '@/components/ui';
 
 const signupSchema = z.object({
   firstName: z.string().min(1, 'Prénom requis'),
@@ -60,11 +61,11 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E5E7EB] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F7F7F7] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-4xl font-bold text-brand-orange mb-1">JAMBAAR</div>
-          <div className="text-sm text-dark-text">Ton futur commence avec un skill.</div>
+          <JambaarLogo size="lg" href="/" className="text-[#1E1E1E]" />
+          <div className="text-sm text-dark-text mt-2">Ton futur commence avec un skill.</div>
         </div>
 
         <div className="bg-white border border-dark-border rounded-2xl p-6 shadow-card space-y-4">

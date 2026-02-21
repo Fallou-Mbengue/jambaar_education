@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useNotificationsStore } from '@/store/notifications.store';
 import { useAuthStore } from '@/store/auth.store';
+import { JambaarLogo } from '@/components/ui';
 import clsx from 'clsx';
 
 interface SidebarProps {
@@ -49,11 +50,10 @@ export function Sidebar({ compact = false, onToggle }: SidebarProps) {
           compact ? 'justify-center px-0' : 'px-4 gap-3',
         )}
       >
-        <div className="w-8 h-8 bg-brand-orange rounded-lg flex items-center justify-center flex-shrink-0">
-          <span className="text-dark-text font-black text-sm">J</span>
-        </div>
-        {!compact && (
-          <span className="text-gray-800 font-bold text-lg tracking-tight">JAMBAAR</span>
+        {compact ? (
+          <JambaarLogo size="sm" href="/home" className="text-[#1E1E1E]" />
+        ) : (
+          <JambaarLogo size="sm" href="/home" className="text-[#1E1E1E]" />
         )}
       </div>
 

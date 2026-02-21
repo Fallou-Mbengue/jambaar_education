@@ -17,6 +17,13 @@ export class ProgramsController {
     return this.programsService.findAllPublic();
   }
 
+  @Get('public/:id')
+  @Public()
+  @ApiOperation({ summary: 'Get program details (public, no auth required)' })
+  findByIdPublic(@Param('id') id: string) {
+    return this.programsService.findByIdPublic(id);
+  }
+
   @Get()
   @ApiOperation({ summary: 'List all programs' })
   findAll(@CurrentUser() user: JwtPayload) {

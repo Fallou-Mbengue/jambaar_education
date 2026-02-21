@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { authApi } from '@/lib/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
+import { JambaarLogo } from '@/components/ui';
 
 const schema = z.object({
   email: z.string().email(),
@@ -49,8 +50,8 @@ export default function DashboardLoginPage() {
     <div className="min-h-screen bg-[#E5E7EB] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-3xl font-bold text-brand-orange">JAMBAAR</div>
-          <div className="text-sm text-gray-600 mt-1">Dashboard Partenaire</div>
+          <JambaarLogo size="lg" href="/" className="text-[#1E1E1E]" />
+          <div className="text-sm text-gray-600 mt-2">Dashboard Partenaire</div>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-card space-y-4">

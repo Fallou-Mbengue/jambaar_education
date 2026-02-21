@@ -299,6 +299,33 @@ body {
   }
 }
 
+/* Detail page container — Figma: 1128px content in 1920px canvas */
+.detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+@media (min-width: 640px) {
+  .detail-container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .detail-container {
+    padding-left: 36px;
+    padding-right: 36px;
+  }
+}
+
+/* Mobile safe-area for sticky CTA */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 .landing-pattern {
   background-image:
     repeating-linear-gradient(

@@ -21,7 +21,7 @@ import {
 import { useNotificationsStore } from '@/store/notifications.store';
 import { useRightPanelStore } from '@/store/rightPanel.store';
 import { ContentTypeBadge, PremiumBadge } from '@/components/ui/Badge';
-import { FeedItemSkeleton, EmptyState } from '@/components/ui';
+import { FeedItemSkeleton, EmptyState, JambaarLogo } from '@/components/ui';
 import apiClient from '@/lib/api/client';
 import { aiApi } from '@/lib/api/content.api';
 import clsx from 'clsx';
@@ -423,7 +423,7 @@ export default function HomePage() {
   const MobileFeed = (
     <div className="md:hidden relative">
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 pt-4 pb-2 bg-gradient-to-b from-black/50 to-transparent">
-        <div className="text-brand-orange font-bold text-xl">JAMBAAR</div>
+        <JambaarLogo size="sm" href="/home" className="text-white" />
       </div>
       <div ref={containerRef} className="feed-container">
         {allItems.map((item, idx) => (

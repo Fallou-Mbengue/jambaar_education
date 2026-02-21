@@ -8,6 +8,7 @@ import { z } from 'zod';
 import Link from 'next/link';
 import { authApi } from '@/lib/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
+import { JambaarLogo } from '@/components/ui';
 
 const loginSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -54,12 +55,11 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E5E7EB] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F7F7F7] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-8">
-          <div className="text-4xl font-bold text-brand-orange mb-1">JAMBAAR</div>
-          <div className="text-sm text-dark-text">Les soft skills qui ouvrent les portes.</div>
+          <JambaarLogo size="lg" href="/" className="text-[#1E1E1E]" />
+          <div className="text-sm text-dark-text mt-2">Les soft skills qui ouvrent les portes.</div>
         </div>
 
         <div className="bg-white border border-dark-border rounded-2xl p-6 shadow-card space-y-4">
@@ -123,7 +123,7 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#E5E7EB] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F7F7F7] flex items-center justify-center p-4">
         <div className="text-brand-orange">Chargement...</div>
       </div>
     }>
