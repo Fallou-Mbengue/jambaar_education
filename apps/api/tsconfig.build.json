@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "./src",
     "paths": {
-      "@jambaar/shared": ["../../packages/shared/dist"]
+      "@jambaar/shared": ["../../packages/shared/dist"],
+      "@nestjs/config": ["../../node_modules/@nestjs/config"]
     }
   },
   "include": ["src"],

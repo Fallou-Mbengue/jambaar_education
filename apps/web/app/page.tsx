@@ -3,31 +3,25 @@
 import {
   LandingHeader,
   HeroSection,
+  ExplorePathsSection,
+  FormationsSection,
   WhyJambaar,
-  HowItWorks,
-  ShowcaseProduct,
-  GamificationSection,
-  PricingSection,
-  SocialProof,
-  FAQSection,
-  FinalCTA,
+  CoachesSection,
+  FreePathsSection,
   LandingFooter,
 } from '@/components/landing';
 
 export default function LandingPage() {
   return (
-    <div className="landing-page">
+    <div className="landing-page bg-white">
       <LandingHeader />
       <main>
         <HeroSection />
+        <ExplorePathsSection />
+        <FormationsSection />
         <WhyJambaar />
-        <HowItWorks />
-        <ShowcaseProduct />
-        <GamificationSection />
-        <PricingSection />
-        <SocialProof />
-        <FAQSection />
-        <FinalCTA />
+        <CoachesSection />
+        <FreePathsSection />
       </main>
       <LandingFooter />
     </div>

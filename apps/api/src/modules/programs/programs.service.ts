@@ -11,6 +11,32 @@ export class ProgramsService {
     private eventEmitter: EventEmitter2,
   ) {}
 
+  async findAllPublic() {
+    const programs = await this.prisma.program.findMany({
+      where: { status: 'ACTIVE' },
+      include: {
+        _count: { select: { modules: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return Promise.all(
+      programs.map(async (p) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        isPremium: p.isPremium,
+        durationDays: p.durationDays,
+        tags: p.tags,
+        status: p.status,
+        thumbnailUrl: p.thumbnailKey
+          ? await this.minio.getPresignedReadUrl(p.thumbnailKey)
+          : null,
+        _count: p._count,
+      })),
+    );
+  }
+
   async findAll(userId: string) {
     const programs = await this.prisma.program.findMany({
       where: { status: 'ACTIVE' },

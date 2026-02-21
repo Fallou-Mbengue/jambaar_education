@@ -1,33 +1,30 @@
 'use client';
 
-import { Zap, TrendingUp, Sparkles } from 'lucide-react';
+import { FileText, Calendar, PlusCircle } from 'lucide-react';
 import { useScrollReveal } from './useScrollReveal';
 import clsx from 'clsx';
 
 const BENEFITS = [
   {
-    icon: Zap,
-    title: 'Apprends vite',
-    description:
-      'Des contenus de 5 minutes pensés pour ton emploi du temps. Vidéos, articles, micro-quiz — apprends partout, tout le temps.',
-    color: 'text-landing-orange',
-    bg: 'bg-landing-orange/10',
+    icon: FileText,
+    title: 'Apprentissage agile',
+    description: 'Une approche flexible qui s\'adapte à votre rythme et à vos objectifs pour des résultats concrets.',
+    color: 'text-gray-700',
+    bg: 'bg-gray-100',
   },
   {
-    icon: TrendingUp,
-    title: 'Progresse chaque jour',
-    description:
-      'Challenges de 7 jours, streaks, XP et niveaux. Chaque action te fait avancer. La régularité est récompensée.',
-    color: 'text-landing-green',
-    bg: 'bg-landing-green/10',
+    icon: Calendar,
+    title: 'Progression continue',
+    description: 'Suivez votre avancement et validez vos compétences étape par étape avec un accompagnement dédié.',
+    color: 'text-gray-700',
+    bg: 'bg-gray-100',
   },
   {
-    icon: Sparkles,
-    title: 'Guidé par l\'IA',
-    description:
-      'Un assistant IA qui résume tes cours, te recommande du contenu personnalisé et répond à tes questions.',
-    color: 'text-purple-600',
-    bg: 'bg-purple-100',
+    icon: PlusCircle,
+    title: 'Coaching personnalisé',
+    description: 'Bénéficiez d\'un suivi sur mesure avec des experts pour maximiser votre développement.',
+    color: 'text-gray-700',
+    bg: 'bg-gray-100',
   },
 ];
 
@@ -35,7 +32,7 @@ export function WhyJambaar() {
   const { ref, isVisible } = useScrollReveal();
 
   return (
-    <section className="py-20 lg:py-28 bg-white landing-section" id="pourquoi">
+    <section className="py-16 lg:py-20 bg-white landing-section" id="pourquoi">
       <div className="landing-container">
         <div
           ref={ref}
@@ -44,13 +41,12 @@ export function WhyJambaar() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
           )}
         >
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-landing-blue mb-4">
-              Pourquoi Jambaar ?
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1E1E1E] mb-4">
+              Pourquoi choisir Jambaar
             </h2>
-            <p className="text-lg text-gray-500">
-              Une plateforme conçue pour les jeunes professionnels africains
-              qui veulent se démarquer.
+            <p className="text-base text-gray-600 leading-relaxed">
+              Nous proposons une approche d&apos;apprentissage unique et innovante, axée sur la pratique et l&apos;interactivité.
             </p>
           </div>
 
@@ -58,16 +54,16 @@ export function WhyJambaar() {
             {BENEFITS.map((benefit, i) => (
               <div
                 key={benefit.title}
-                className="group relative bg-white border border-gray-100 rounded-2xl p-8 hover:border-gray-200 hover:shadow-lg transition-all duration-300"
-                style={{ transitionDelay: `${i * 100}ms` }}
+                className="bg-gray-50/80 border border-gray-100 rounded-xl p-6 lg:p-8 hover:shadow-md transition-shadow"
+                style={{ transitionDelay: `${i * 80}ms` }}
               >
                 <div className={clsx('w-12 h-12 rounded-xl flex items-center justify-center mb-5', benefit.bg)}>
                   <benefit.icon size={24} className={benefit.color} />
                 </div>
-                <h3 className="text-xl font-bold text-landing-blue mb-3">
+                <h3 className="text-lg font-bold text-[#1E1E1E] mb-3">
                   {benefit.title}
                 </h3>
-                <p className="text-gray-500 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed text-sm">
                   {benefit.description}
                 </p>
               </div>

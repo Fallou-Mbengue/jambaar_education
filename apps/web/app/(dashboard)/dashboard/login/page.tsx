@@ -46,39 +46,51 @@ export default function DashboardLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#E5E7EB] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="text-3xl font-bold text-brand-orange">JAMBAAR</div>
-          <div className="text-sm text-dark-text mt-1">Dashboard Partenaire</div>
+          <div className="text-sm text-gray-600 mt-1">Dashboard Partenaire</div>
         </div>
 
-        <div className="glass rounded-2xl p-6 space-y-4">
-          <h1 className="text-xl font-semibold text-center">Connexion Admin</h1>
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-card space-y-4">
+          <h1 className="text-xl font-semibold text-center text-gray-800">Connexion Admin</h1>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-2 rounded-lg">
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg" role="alert">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <input
-              {...register('email')}
-              type="email"
-              placeholder="Email"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
-            />
-            <input
-              {...register('password')}
-              type="password"
-              placeholder="Mot de passe"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-dark-text placeholder-dark-text focus:outline-none focus:border-brand-orange transition-colors"
-            />
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1">Email</label>
+              <input
+                {...register('email')}
+                type="email"
+                placeholder="Email"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange/20 transition-colors"
+              />
+              {errors.email && (
+                <p className="text-red-600 text-xs mt-1">{errors.email.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1">Mot de passe</label>
+              <input
+                {...register('password')}
+                type="password"
+                placeholder="Mot de passe"
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-800 placeholder-gray-500 focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange/20 transition-colors"
+              />
+              {errors.password && (
+                <p className="text-red-600 text-xs mt-1">{errors.password.message}</p>
+              )}
+            </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-50 text-dark-text font-semibold py-3 rounded-xl transition-colors"
+              className="w-full bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors"
             >
               {loading ? 'Connexion...' : 'Accéder au dashboard'}
             </button>

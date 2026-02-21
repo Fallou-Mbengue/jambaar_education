@@ -6,7 +6,7 @@
     "build": "nest build",
     "start": "node dist/main.js",
     "start:dev": "npx concurrently -k \"nest build --watch\" \"wait-on dist/main.js && node --watch dist/main.js\"",
-    "dev": "npx nodemon --ext ts --watch src --exec \"npx ts-node -r reflect-metadata -r tsconfig-paths/register -P tsconfig.json src/main.ts\"",
+    "dev": "nest build && nest start --watch",
     "lint": "eslint src --ext .ts",
     "test": "jest",
     "test:e2e": "jest --config ./test/jest-e2e.json"
@@ -53,7 +53,9 @@
     "concurrently": "^9.1.0",
     "wait-on": "^8.0.1",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "nodemon": "^3.1.0",
+    "tsconfig-paths": "^4.2.0"
   },
   "prisma": {
     "seed": "npx ts-node -P tsconfig.json prisma/seed/index.ts"

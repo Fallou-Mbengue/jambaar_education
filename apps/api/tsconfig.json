@@ -9,6 +9,9 @@
     "paths": {
       "@jambaar/shared": [
         "../../packages/shared/src/index.ts"
+      ],
+      "@nestjs/config": [
+        "../../node_modules/@nestjs/config"
       ]
     }
   },

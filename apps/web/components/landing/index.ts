@@ -1,11 +1,8 @@
 export { LandingHeader } from './LandingHeader';
 export { HeroSection } from './HeroSection';
+export { ExplorePathsSection } from './ExplorePathsSection';
+export { FormationsSection } from './FormationsSection';
 export { WhyJambaar } from './WhyJambaar';
-export { HowItWorks } from './HowItWorks';
-export { ShowcaseProduct } from './ShowcaseProduct';
-export { GamificationSection } from './GamificationSection';
-export { PricingSection } from './PricingSection';
-export { SocialProof } from './SocialProof';
-export { FAQSection } from './FAQSection';
-export { FinalCTA } from './FinalCTA';
+export { CoachesSection } from './CoachesSection';
+export { FreePathsSection } from './FreePathsSection';
 export { LandingFooter } from './LandingFooter';
