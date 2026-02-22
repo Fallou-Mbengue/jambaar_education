@@ -15,10 +15,9 @@ const SIZES = {
 
 export function JambaarLogo({ size = 'md', href = '/', className }: JambaarLogoProps) {
   const inner = (
-    <span className={clsx(SIZES[size], 'font-bold tracking-tight', className)}>
-      <span className="text-[#9333EA] text-[1.15em]">J</span>
-      ambaar
-      <span className="text-landing-orange">.</span>
+    <span className={clsx(SIZES[size], 'font-bold tracking-tight inline-flex items-baseline', className)}>
+      <span className="text-[#5D2A87]">Jambaar</span>
+      <span className="inline-block w-[0.4em] h-[0.4em] rounded-full bg-landing-orange align-middle ml-0.5 shrink-0" aria-hidden />
     </span>
   );
 

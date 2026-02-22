@@ -33,8 +33,9 @@ export function LandingFooter() {
           {/* Left — Logo + copyright */}
           <div>
             <Link href="/" className="inline-flex items-center gap-0.5 mb-4">
-              <span className="text-xl sm:text-2xl font-bold tracking-tight">
-                <span className="text-[#9333EA] text-[1.15em]">J</span>ambaar<span className="text-landing-orange">.</span>
+              <span className="text-xl sm:text-2xl font-bold tracking-tight inline-flex items-baseline">
+                <span className="text-[#5D2A87]">Jambaar</span>
+                <span className="inline-block w-2 h-2 rounded-full bg-landing-orange align-middle ml-0.5" aria-hidden />
               </span>
             </Link>
             <p className="text-sm text-gray-400">

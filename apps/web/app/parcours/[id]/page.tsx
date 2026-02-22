@@ -172,8 +172,9 @@ export default function ParcoursDetailPage() {
                     <Play size={30} className="text-white ml-1 fill-white" />
                   </button>
                 </div>
-                <span className="absolute top-4 right-5 text-white/70 text-xs font-semibold select-none">
-                  Jambaar.
+                <span className="absolute top-4 right-5 text-xs font-semibold select-none inline-flex items-baseline gap-0.5">
+                  <span className="text-[#9F7AEA]">Jambaar</span>
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-landing-orange shrink-0" aria-hidden />
                 </span>
               </div>
 

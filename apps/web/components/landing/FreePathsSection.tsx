@@ -32,7 +32,10 @@ function FreePathCard({
         <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-[#9333EA]/90 flex items-center justify-center">
           <HelpCircle size={18} className="text-white" />
         </div>
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-white/80 text-xs font-semibold">Jambaar.</div>
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs font-semibold inline-flex items-baseline gap-0.5">
+          <span className="text-[#9F7AEA]">Jambaar</span>
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-landing-orange shrink-0" aria-hidden />
+        </div>
       </div>
       <div className="p-4 flex-1 flex flex-col">
         <h3 className="font-bold text-[#1E1E1E] text-sm mb-3 line-clamp-2">{title}</h3>

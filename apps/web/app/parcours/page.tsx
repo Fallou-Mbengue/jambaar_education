@@ -331,7 +331,8 @@ function ParcoursFooter() {
           <div>
             <Link href="/" className="inline-flex items-center gap-0.5 mb-3">
               <span className="text-2xl sm:text-3xl font-bold tracking-tight">
-                <span className="text-[#9333EA] text-[1.15em]">J</span>ambaar<span className="text-landing-orange">.</span>
+                <span className="text-[#5D2A87]">Jambaar</span>
+                <span className="inline-block w-2 h-2 rounded-full bg-landing-orange align-middle ml-0.5" aria-hidden />
               </span>
             </Link>
             <p className="text-sm text-gray-400">

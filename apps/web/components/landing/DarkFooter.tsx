@@ -14,8 +14,8 @@ export function DarkFooter() {
           <div className="flex flex-col gap-6">
             <Link href="/" className="inline-block">
               <span className="text-[28px] sm:text-[32px] font-bold tracking-tight text-white">
-                <span className="text-[#9333EA] text-[1.15em]">J</span>ambaar
-                <span className="text-landing-orange">.</span>
+                <span className="text-[#5D2A87]">Jambaar</span>
+                <span className="inline-block w-2 h-2 rounded-full bg-landing-orange align-middle ml-0.5" aria-hidden />
               </span>
             </Link>
             <p className="text-[18px] leading-[22px] text-white/85">

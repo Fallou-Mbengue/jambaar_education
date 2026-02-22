@@ -79,9 +79,9 @@ export function LandingHeader() {
         <nav className="flex items-center justify-between h-[72px]" aria-label="Navigation principale">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-0.5 shrink-0">
-            <span className="text-xl sm:text-2xl font-bold text-[#1E1E1E] tracking-tight">
-              <span className="text-[#9333EA]" style={{ fontSize: '1.15em' }}>J</span>
-              ambaar<span className="text-landing-orange">.</span>
+            <span className="text-xl sm:text-2xl font-bold text-[#5D2A87] tracking-tight inline-flex items-baseline">
+              Jambaar
+              <span className="inline-block w-2 h-2 rounded-full bg-landing-orange align-middle ml-0.5 shrink-0" aria-hidden />
             </span>
           </Link>
 
