@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -25,7 +25,7 @@ type FilterTab = 'all' | 'paid' | 'free';
 
 const ITEMS_PER_PAGE = 12;
 
-export default function ParcoursPage() {
+function ParcoursContent() {
   const searchParams = useSearchParams();
   const initialFilter = searchParams.get('filter');
 
@@ -389,5 +389,19 @@ function ParcoursFooter() {
         </div>
       </div>
     </footer>
+  );
+}
+
+export default function ParcoursPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center">
+          <div className="text-white/60">Chargement...</div>
+        </div>
+      }
+    >
+      <ParcoursContent />
+    </Suspense>
   );
 }
