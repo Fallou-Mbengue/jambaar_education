@@ -52,9 +52,9 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        // Redirect to login
         if (typeof window !== 'undefined') {
-          window.location.href = '/auth/login';
+          const from = encodeURIComponent(window.location.pathname + window.location.search);
+          window.location.href = `/auth/login?from=${from}`;
         }
         return Promise.reject(refreshError);
       } finally {

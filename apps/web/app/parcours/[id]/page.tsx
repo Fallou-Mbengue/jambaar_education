@@ -8,7 +8,7 @@ import {
   ChevronLeft, ChevronDown, ChevronRight,
   Clock, Users, CalendarDays, Play, Lock,
 } from 'lucide-react';
-import { LandingHeader } from '@/components/landing';
+import { LandingHeader, DarkFooter } from '@/components/landing';
 import apiClient from '@/lib/api/client';
 import clsx from 'clsx';
 
@@ -221,7 +221,7 @@ export default function ParcoursDetailPage() {
         {/* mobile / tablet sticky CTA */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#181818] border-t border-white/20 px-4 py-3 safe-area-bottom">
           <Link
-            href={`/auth/signup?from=/parcours/${program.id}`}
+            href={program.isPremium ? `/auth/signup?from=/learn/${program.id}` : `/learn/${program.id}`}
             className="flex items-center justify-between w-full bg-landing-orange hover:bg-landing-orange-hover rounded-lg px-5 py-3.5 transition-colors"
           >
             <span className="text-[#181818] text-sm font-semibold">
@@ -234,7 +234,7 @@ export default function ParcoursDetailPage() {
         </div>
       </main>
 
-      <PageFooter />
+      <DarkFooter />
     </div>
   );
 }
@@ -251,10 +251,14 @@ function MetaItem({ icon: Icon, label }: { icon: React.ElementType; label: strin
 }
 
 function SidebarCTA({ program }: { program: ProgramDetail }) {
+  const ctaHref = program.isPremium
+    ? `/auth/signup?from=/learn/${program.id}`
+    : `/learn/${program.id}`;
+
   return (
     <div className="pt-24">
       <Link
-        href={`/auth/signup?from=/parcours/${program.id}`}
+        href={ctaHref}
         className="flex items-center justify-between w-full bg-landing-orange hover:bg-landing-orange-hover px-[18px] py-[14px] transition-colors"
       >
         <span className="text-[#181818] text-[14px] font-semibold leading-[21px]">
@@ -374,74 +378,3 @@ function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ═══════════════════ FOOTER ═══════════════════ */
-function PageFooter() {
-  const [email, setEmail] = useState('');
-  const submit = (e: React.FormEvent) => { e.preventDefault(); };
-
-  return (
-    <footer className="bg-[#181818] text-white pt-20 pb-0 lg:pb-0">
-      <div className="detail-container">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16 items-start">
-          {/* logo */}
-          <div className="flex flex-col gap-6">
-            <Link href="/" className="inline-block">
-              <span className="text-[28px] sm:text-[32px] font-bold tracking-tight">
-                <span className="text-[#9333EA] text-[1.15em]">J</span>ambaar
-                <span className="text-landing-orange">.</span>
-              </span>
-            </Link>
-            <p className="text-[18px] leading-[22px] text-white/85">
-              L&apos;Excellence à l&apos;Africaine
-            </p>
-          </div>
-
-          {/* communauté */}
-          <div className="flex flex-col gap-2 pt-2.5">
-            <h4 className="text-base font-bold text-[#F2F0F5] leading-6">Communauté</h4>
-            <p className="text-base text-white/85 leading-6">Rejoignez nos Jambaars</p>
-            <a href="#" className="text-base text-[#397B21] font-semibold leading-6 hover:underline">
-              Je rejoins la communauté WhatsApp
-            </a>
-            <p className="text-base text-[#F2F0F5] leading-6 mt-1">
-              Soyez les premiers à être informés des nouveautés
-            </p>
-            <form onSubmit={submit} className="flex overflow-hidden rounded-md">
-              <input
-                type="email"
-                placeholder="votre adresse email..."
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 min-w-0 h-10 px-3 bg-[#EBE5F4] border border-black/15 rounded-l-md text-[#6c757d] text-base placeholder:text-[#ADB5BD] focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="h-10 px-3.5 bg-landing-orange border border-landing-orange text-[#212529] text-base whitespace-nowrap"
-              >
-                S&apos;inscrire
-              </button>
-            </form>
-          </div>
-
-          {/* contact */}
-          <div className="flex flex-col gap-2 pt-2.5">
-            <h4 className="text-base font-bold text-[#F2F0F5] leading-6">Contact</h4>
-            <a href="mailto:contact@jambaar.io" className="text-[18px] text-white/85 leading-[22px] hover:text-white">
-              contact@jambaar.io
-            </a>
-            <a href="#" className="text-base text-landing-orange font-semibold underline leading-6 hover:no-underline">
-              Devenir formateur
-            </a>
-          </div>
-        </div>
-
-        {/* copyright */}
-        <div className="flex items-center justify-center gap-3 h-[60px] mt-6 text-base">
-          <span>© 2025 Jambaar</span>
-          <span>|</span>
-          <span>Tous droits réservés!</span>
-        </div>
-      </div>
-    </footer>
-  );
-}

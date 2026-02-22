@@ -49,9 +49,10 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Onboarding gate (skip for dashboard and onboarding itself)
+    // Onboarding gate (skip for dashboard, onboarding, and learn pages)
     if (
       !pathname.startsWith('/dashboard') &&
+      !pathname.startsWith('/learn') &&
       pathname !== '/onboarding' &&
       !user.onboardingDone
     ) {
@@ -60,9 +61,12 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch {
-    // Token expired or invalid
+    // Token expired or invalid — preserve destination via `from`
     const loginPath = pathname.startsWith('/dashboard') ? '/dashboard/login' : '/auth/login';
-    const response = NextResponse.redirect(new URL(loginPath, request.url));
+    const url = request.nextUrl.clone();
+    url.pathname = loginPath;
+    url.searchParams.set('from', pathname);
+    const response = NextResponse.redirect(url);
     response.cookies.delete('access_token');
     response.cookies.delete('refresh_token');
     return response;

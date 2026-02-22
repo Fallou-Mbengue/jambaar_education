@@ -6,3 +6,4 @@ export { WhyJambaar } from './WhyJambaar';
 export { CoachesSection } from './CoachesSection';
 export { FreePathsSection } from './FreePathsSection';
 export { LandingFooter } from './LandingFooter';
+export { DarkFooter } from './DarkFooter';
