@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { dashboardApi } from '@/lib/api/content.api';
-import { ArrowLeft, Trophy, Flame, Target } from 'lucide-react';
+import { ArrowLeft, Target } from 'lucide-react';
 
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -29,7 +29,7 @@ export default function UserDetailPage() {
     return <p className="text-dark-text p-6">Utilisateur non trouvé.</p>;
   }
 
-  const { user, gamification, progress, softSkillScores } = data;
+  const { user, progress, softSkillScores } = data;
 
   return (
     <div className="p-6 space-y-6">
@@ -38,7 +38,7 @@ export default function UserDetailPage() {
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-2xl font-bold text-dark-text">
-          {user.profile?.displayName ?? user.email}
+          {user.profile?.firstName} {user.profile?.lastName} {user.email}
         </h1>
       </div>
 
@@ -46,28 +46,10 @@ export default function UserDetailPage() {
       <div className="glass rounded-xl p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
         <div className="text-center">
           <div className="flex items-center justify-center mb-2">
-            <Trophy size={24} className="text-brand-orange" />
-          </div>
-          <p className="text-2xl font-bold text-dark-text">{gamification?.totalXp ?? 0}</p>
-          <p className="text-dark-text text-xs">XP Total</p>
-        </div>
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Flame size={24} className="text-orange-500" />
-          </div>
-          <p className="text-2xl font-bold text-dark-text">{gamification?.streak ?? 0}</p>
-          <p className="text-dark-text text-xs">Jours de suite</p>
-        </div>
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-2">
             <Target size={24} className="text-blue-400" />
           </div>
           <p className="text-2xl font-bold text-dark-text">{progress?.completedContent ?? 0}</p>
           <p className="text-dark-text text-xs">Contenus terminés</p>
-        </div>
-        <div className="text-center">
-          <p className="text-2xl font-bold text-dark-text capitalize">{gamification?.currentLevel?.toLowerCase() ?? '-'}</p>
-          <p className="text-dark-text text-xs">Niveau</p>
         </div>
       </div>
 

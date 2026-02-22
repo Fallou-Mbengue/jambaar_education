@@ -221,14 +221,6 @@ export class ProgramsService {
       },
     });
 
-    if (isCompleted) {
-      this.eventEmitter.emit('gamification.awardXp', {
-        userId,
-        action: 'PROGRAM_COMPLETED',
-        metadata: { programId },
-      });
-    }
-
     return progress;
   }
 

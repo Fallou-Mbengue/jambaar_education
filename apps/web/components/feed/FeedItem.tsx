@@ -3,7 +3,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { Heart, Bookmark, Share2, Play, Lock } from 'lucide-react';
 import { feedApi } from '@/lib/api/feed.api';
-import { useGamificationStore } from '@/store/gamification.store';
 import { useRouter } from 'next/navigation';
 
 interface FeedItemProps {
@@ -33,8 +32,6 @@ export function FeedItem({ item, isActive, hasSubscription }: FeedItemProps) {
   const [isSaved, setIsSaved] = useState(item.isSaved);
   const [likeCount, setLikeCount] = useState(item.likeCount);
   const [isPlaying, setIsPlaying] = useState(false);
-  const addPendingXp = useGamificationStore((s) => s.addPendingXp);
-
   const isPremiumLocked = item.isPremium && !hasSubscription;
 
   useEffect(() => {
@@ -53,7 +50,6 @@ export function FeedItem({ item, isActive, hasSubscription }: FeedItemProps) {
     setLikeCount((prev) => prev + (isLiked ? -1 : 1));
     try {
       await feedApi.toggleLike(item.id);
-      if (!isLiked) addPendingXp(10);
     } catch {
       setIsLiked((prev) => !prev);
       setLikeCount((prev) => prev + (isLiked ? 1 : -1));

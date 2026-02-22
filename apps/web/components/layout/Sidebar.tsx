@@ -5,8 +5,6 @@ import { usePathname } from 'next/navigation';
 import {
   Home,
   BookOpen,
-  Zap,
-  MessageSquare,
   Bookmark,
   User,
   CreditCard,
@@ -25,9 +23,7 @@ interface SidebarProps {
 
 const NAV_ITEMS = [
   { href: '/home', icon: Home, label: 'Feed' },
-  { href: '/programs', icon: BookOpen, label: 'Programmes' },
-  { href: '/challenges', icon: Zap, label: 'Challenges' },
-  { href: '/assistant', icon: MessageSquare, label: 'Assistant IA' },
+  { href: '/parcours', icon: BookOpen, label: 'Programmes' },
   { href: '/saved', icon: Bookmark, label: 'Sauvegardés' },
   { href: '/profile', icon: User, label: 'Profil' },
   { href: '/billing', icon: CreditCard, label: 'Abonnement' },

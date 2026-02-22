@@ -43,7 +43,7 @@ export function Topbar() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/programs?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/parcours?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
     }
   };

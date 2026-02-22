@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Clock, ChevronRight, BookOpen, Award } from 'lucide-react';
 import { LandingHeader, DarkFooter } from '@/components/landing';
 import { useAuthStore } from '@/store/auth.store';
-import { programsApi, aiApi } from '@/lib/api/content.api';
+import { programsApi } from '@/lib/api/content.api';
 
 /* ── Types ──────────────────────────────────────────────── */
 
@@ -316,18 +316,13 @@ export default function DashboardHomePage() {
       .then((res) => {
         const data = res.data?.data ?? res.data ?? [];
         setPrograms(data);
+        setRecommendations(data.filter((p: ProgramData) => p.progress === null));
       })
       .catch(() => {})
-      .finally(() => setLoading(false));
-
-    aiApi
-      .getRecommendations()
-      .then((res) => {
-        const data = res.data?.data ?? res.data ?? [];
-        setRecommendations(Array.isArray(data) ? data : []);
-      })
-      .catch(() => setRecommendations([]))
-      .finally(() => setRecsLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setRecsLoading(false);
+      });
   }, []);
 
   const enrolledPrograms = programs.filter((p) => p.progress !== null);

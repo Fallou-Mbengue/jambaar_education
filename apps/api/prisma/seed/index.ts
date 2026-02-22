@@ -10,31 +10,23 @@ async function main() {
   await seedPlans();
   console.log('✅ Plans seeded');
 
-  // 2. Badges
-  await seedBadges();
-  console.log('✅ Badges seeded');
-
-  // 3. Users
+  // 2. Users
   const users = await seedUsers();
   console.log('✅ Users seeded');
 
-  // 4. Content
+  // 3. Content
   const contents = await seedContent();
   console.log('✅ Content seeded');
 
-  // 5. Courses
+  // 4. Courses
   const courses = await seedCourses(contents);
   console.log('✅ Courses seeded');
 
-  // 6. Program
+  // 5. Program
   await seedProgram(courses);
   console.log('✅ Programs seeded');
 
-  // 7. Challenge
-  await seedChallenge(contents);
-  console.log('✅ Challenges seeded');
-
-  // 8. Sample progress
+  // 7. Sample progress
   await seedUserProgress(users, contents);
   console.log('✅ User progress seeded');
 
@@ -52,19 +44,19 @@ async function seedPlans() {
       name: 'Hebdomadaire',
       billingPeriod: 'WEEKLY' as const,
       priceXof: 2000,
-      features: ['Accès complet 7 jours', 'Challenges 7 jours', 'Feed illimité'],
+      features: ['Accès complet 7 jours', 'Feed illimité'],
     },
     {
       name: 'Mensuel',
       billingPeriod: 'MONTHLY' as const,
       priceXof: 5000,
-      features: ['Accès complet 30 jours', 'Challenges 7 jours', 'Assistant IA', 'Programmes complets'],
+      features: ['Accès complet 30 jours', 'Programmes complets'],
     },
     {
       name: 'Trimestriel',
       billingPeriod: 'QUARTERLY' as const,
       priceXof: 12000,
-      features: ['Accès complet 90 jours', 'Challenges 7 jours', 'Assistant IA', 'Programmes complets', 'Support prioritaire'],
+      features: ['Accès complet 90 jours', 'Programmes complets', 'Support prioritaire'],
     },
   ];
 

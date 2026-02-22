@@ -18,8 +18,6 @@ export class DashboardService {
       publishedContent,
       activeSubscriptions,
       totalRevenue,
-      challengesCompleted,
-      avgStreak,
     ] = await Promise.all([
       this.prisma.user.count({ where: { role: 'USER' } }),
       this.prisma.user.count({
@@ -34,10 +32,6 @@ export class DashboardService {
       this.prisma.payment
         .aggregate({ where: { status: 'SUCCESS' }, _sum: { amountXof: true } })
         .then((r) => r._sum.amountXof ?? 0),
-      this.prisma.challengeProgress.count({ where: { status: 'COMPLETED' } }),
-      this.prisma.gamificationProfile
-        .aggregate({ _avg: { currentStreak: true } })
-        .then((r) => r._avg.currentStreak ?? 0),
     ]);
 
     return {
@@ -49,10 +43,6 @@ export class DashboardService {
       },
       content: { total: totalContent, published: publishedContent },
       billing: { activeSubscriptions, totalRevenueXof: totalRevenue },
-      learning: {
-        challengesCompleted,
-        avgStreak: Math.round(avgStreak * 10) / 10,
-      },
     };
   }
 
@@ -81,11 +71,9 @@ export class DashboardService {
         take: limit,
         include: {
           profile: true,
-          gamification: true,
           _count: {
             select: {
               progresses: { where: { isCompleted: true } },
-              challengeProgresses: { where: { status: 'COMPLETED' } },
             },
           },
           subscriptions: {
@@ -103,7 +91,6 @@ export class DashboardService {
       items: users.map(({ passwordHash: _ph, ...u }) => ({
         ...u,
         completedContent: u._count.progresses,
-        completedChallenges: u._count.challengeProgresses,
         activeSubscription: u.subscriptions[0] ?? null,
       })),
       total,

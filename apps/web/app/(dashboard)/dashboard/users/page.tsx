@@ -10,9 +10,7 @@ interface UserItem {
   id: string;
   email: string;
   profile?: { firstName: string; lastName: string };
-  gamification?: { totalXp: number; currentLevel: string; currentStreak: number };
   completedContent: number;
-  completedChallenges: number;
   activeSubscription?: { plan: { name: string } } | null;
   createdAt: string;
 }
@@ -56,9 +54,7 @@ export default function DashboardUsersPage() {
           <thead>
             <tr className="border-b border-white/10 text-dark-text">
               <th className="text-left px-4 py-3">Utilisateur</th>
-              <th className="text-left px-4 py-3">Niveau</th>
               <th className="text-left px-4 py-3">Contenus</th>
-              <th className="text-left px-4 py-3">Streak</th>
               <th className="text-left px-4 py-3">Abonnement</th>
               <th className="text-right px-4 py-3">Action</th>
             </tr>
@@ -66,7 +62,7 @@ export default function DashboardUsersPage() {
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="text-center py-8 text-dark-text">Chargement...</td>
+                <td colSpan={4} className="text-center py-8 text-dark-text">Chargement...</td>
               </tr>
             ) : (
               (data?.items ?? []).map((user: UserItem) => (
@@ -77,16 +73,7 @@ export default function DashboardUsersPage() {
                     </div>
                     <div className="text-dark-text text-xs">{user.email}</div>
                   </td>
-                  <td className="px-4 py-3">
-                    <span className="text-brand-orange text-xs font-medium">
-                      {user.gamification?.currentLevel ?? 'Starter'}
-                    </span>
-                    <div className="text-dark-text text-xs">{user.gamification?.totalXp ?? 0} XP</div>
-                  </td>
                   <td className="px-4 py-3 text-dark-text">{user.completedContent}</td>
-                  <td className="px-4 py-3">
-                    <span className="text-brand-orange">🔥 {user.gamification?.currentStreak ?? 0}</span>
-                  </td>
                   <td className="px-4 py-3">
                     {user.activeSubscription ? (
                       <span className="text-brand-green text-xs">{user.activeSubscription.plan.name}</span>

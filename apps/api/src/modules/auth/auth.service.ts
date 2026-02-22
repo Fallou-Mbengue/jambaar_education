@@ -44,7 +44,6 @@ export class AuthService {
             phone: dto.phone,
           },
         },
-        gamification: { create: {} },
       },
     });
 

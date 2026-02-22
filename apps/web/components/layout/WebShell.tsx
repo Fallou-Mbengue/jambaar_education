@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, BookOpen, Zap, MessageSquare, User } from 'lucide-react';
+import { Home, BookOpen, User } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { RightPanel } from './RightPanel';
@@ -11,13 +11,11 @@ import { useNotificationsStore } from '@/store/notifications.store';
 import clsx from 'clsx';
 
 // Pages that don't show the right panel (section Contexte)
-const NO_PANEL_ROUTES = ['/home', '/programs', '/assistant', '/billing', '/saved', '/onboarding'];
+const NO_PANEL_ROUTES = ['/home', '/parcours', '/billing', '/saved', '/onboarding'];
 // Pages where we use compact sidebar (tablet) – handled via CSS
 const MOBILE_NAV_ITEMS = [
   { href: '/home', icon: Home, label: 'Feed' },
-  { href: '/programs', icon: BookOpen, label: 'Programmes' },
-  { href: '/challenges', icon: Zap, label: 'Challenges' },
-  { href: '/assistant', icon: MessageSquare, label: 'IA' },
+  { href: '/parcours', icon: BookOpen, label: 'Programmes' },
   { href: '/profile', icon: User, label: 'Profil' },
 ];
 

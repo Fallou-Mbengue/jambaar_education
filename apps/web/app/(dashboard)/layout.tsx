@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Users,
   BookOpen,
-  Zap,
   CreditCard,
   LogOut,
   BarChart3,
@@ -20,7 +19,6 @@ const NAV_ITEMS = [
   { href: '/dashboard/users', icon: Users, label: 'Utilisateurs' },
   { href: '/dashboard/content', icon: BookOpen, label: 'Contenus' },
   { href: '/dashboard/programs', icon: BarChart3, label: 'Programmes' },
-  { href: '/dashboard/challenges', icon: Zap, label: 'Challenges' },
   { href: '/dashboard/billing', icon: CreditCard, label: 'Abonnements' },
 ];
 

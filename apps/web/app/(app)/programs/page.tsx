@@ -207,7 +207,7 @@ function ProgramCard({ program }: { program: Program }) {
 
   return (
     <Link
-      href={`/programs/${program.id}`}
+      href={`/parcours/${program.id}`}
       className="card card-interactive block group"
       aria-label={`Programme: ${program.title}`}
     >

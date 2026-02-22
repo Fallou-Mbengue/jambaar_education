@@ -17,8 +17,6 @@ const PLANS = [
     features: [
       'Accès à tous les contenus',
       'Feed personnalisé',
-      'Challenges 7 jours',
-      'Progression & gamification',
     ],
     cta: 'Choisir Hebdo',
   },
@@ -32,9 +30,6 @@ const PLANS = [
     bestValue: false,
     features: [
       'Tout du plan Hebdo',
-      'Assistant IA illimité',
-      'Résumés IA des cours',
-      'Badges et certificats',
       'Contenu premium exclusif',
     ],
     cta: 'Choisir Mensuel',
@@ -49,7 +44,6 @@ const PLANS = [
     bestValue: true,
     features: [
       'Tout du plan Mensuel',
-      'Assistant IA prioritaire',
       'Accès anticipé nouveautés',
       'Support prioritaire',
       'Certificats téléchargeables',

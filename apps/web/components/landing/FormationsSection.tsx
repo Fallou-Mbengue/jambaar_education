@@ -61,7 +61,7 @@ function FormationCard({
           {description}
         </p>
         <Link
-          href="/programs"
+          href="/parcours"
           className="inline-flex items-center justify-center w-full sm:w-auto h-10 px-6 text-sm font-semibold text-white bg-landing-orange hover:bg-landing-orange-hover rounded-lg transition-colors"
         >
           En savoir plus
@@ -90,7 +90,7 @@ export function FormationsSection() {
         </div>
         <div className="text-center">
           <Link
-            href="/programs"
+            href="/parcours"
             className="inline-flex items-center justify-center h-12 px-8 text-base font-semibold text-white bg-landing-orange hover:bg-landing-orange-hover rounded-lg transition-colors"
           >
             Toutes les formations

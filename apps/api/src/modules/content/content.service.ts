@@ -90,11 +90,6 @@ export class ContentService {
     });
 
     if (isCompleted) {
-      this.eventEmitter.emit('gamification.awardXp', {
-        userId,
-        action: 'CONTENT_COMPLETED',
-        metadata: { contentId },
-      });
       this.eventEmitter.emit('analytics.track', {
         userId,
         eventName: 'content_completed',
@@ -122,11 +117,6 @@ export class ContentService {
       await this.prisma.content.update({
         where: { id: contentId },
         data: { likeCount: { increment: 1 } },
-      });
-      this.eventEmitter.emit('gamification.awardXp', {
-        userId,
-        action: 'CONTENT_VIEWED',
-        metadata: { contentId },
       });
       return { liked: true };
     }

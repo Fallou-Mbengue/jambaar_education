@@ -2,13 +2,12 @@
 
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/api/client';
-import { Users, BookOpen, CreditCard, Flame, TrendingUp, CheckCircle, LucideIcon } from 'lucide-react';
+import { Users, BookOpen, CreditCard, Flame, TrendingUp, LucideIcon } from 'lucide-react';
 
 interface KpiData {
   users: { total: number; active30d: number; active7d: number; retentionRate30d: number };
   content: { total: number; published: number };
   billing: { activeSubscriptions: number; totalRevenueXof: number };
-  learning: { challengesCompleted: number; avgStreak: number };
 }
 
 function StatCard({
@@ -83,13 +82,6 @@ export default function DashboardPage() {
           sub={`${(kpis?.billing.totalRevenueXof ?? 0).toLocaleString()} F XOF total`}
           color="bg-brand-orange/20"
         />
-        <StatCard
-          icon={CheckCircle}
-          label="Challenges complétés"
-          value={kpis?.learning.challengesCompleted ?? 0}
-          sub={`Streak moyen: ${kpis?.learning.avgStreak ?? 0} jours`}
-          color="bg-brand-gold/20"
-        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -119,10 +111,6 @@ export default function DashboardPage() {
             <div className="flex justify-between text-sm">
               <span className="text-dark-text">Actifs 7j</span>
               <span className="text-dark-text font-medium">{kpis?.users.active7d ?? 0}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-dark-text">Streak moyen</span>
-              <span className="text-brand-orange font-medium">{kpis?.learning.avgStreak ?? 0}j</span>
             </div>
           </div>
         </div>

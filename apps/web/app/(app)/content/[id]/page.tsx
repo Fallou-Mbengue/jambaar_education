@@ -3,18 +3,18 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
-import { contentApi, aiApi } from '@/lib/api/content.api';
+import { contentApi } from '@/lib/api/content.api';
 import {
   ArrowLeft, Heart, Bookmark, Share2, Play, Pause,
   CheckCircle, Maximize2, Minimize2, FastForward, Rewind,
-  Volume2, VolumeX, Loader2, Sparkles,
+  Volume2, VolumeX, Loader2,
 } from 'lucide-react';
 import { ContentTypeBadge, PremiumBadge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/SkeletonLoader';
 import { useRightPanelStore } from '@/store/rightPanel.store';
 import clsx from 'clsx';
 
-type Tab = 'description' | 'quiz' | 'ai-summary';
+type Tab = 'description' | 'quiz';
 
 interface QuizQuestion {
   id: string;
@@ -29,7 +29,6 @@ export default function ContentPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const setPanel = useRightPanelStore((s) => s.setContent);
-  const setAiSummary = useRightPanelStore((s) => s.setAiSummary);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [activeTab, setActiveTab] = useState<Tab>('description');
@@ -42,8 +41,6 @@ export default function ContentPage() {
   const [speed, setSpeed] = useState(1);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
-  const [aiSummary, setAiSummaryLocal] = useState<string | null>(null);
-  const [loadingSummary, setLoadingSummary] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const controlsTimer = useRef<ReturnType<typeof setTimeout>>();
 
@@ -123,34 +120,7 @@ export default function ContentPage() {
   useEffect(() => {
     if (!content) return;
     setPanel({ contentId: id, contentTitle: content.title, contentType: content.type });
-    setAiSummary(null, true);
-    aiApi.summarize(id)
-      .then((res) => {
-        setAiSummaryLocal(res.data.data.summary);
-        setAiSummary(res.data.data.summary);
-      })
-      .catch(() => {
-        setAiSummary('Résumé non disponible.', false);
-      });
   }, [content?.id]);
-
-  // AI summary tab
-  const handleLoadSummary = useCallback(async () => {
-    if (aiSummary || loadingSummary) return;
-    setLoadingSummary(true);
-    try {
-      const res = await aiApi.summarize(id);
-      setAiSummaryLocal(res.data.data.summary);
-    } catch {
-      setAiSummaryLocal('Résumé non disponible.');
-    } finally {
-      setLoadingSummary(false);
-    }
-  }, [aiSummary, loadingSummary, id]);
-
-  useEffect(() => {
-    if (activeTab === 'ai-summary') handleLoadSummary();
-  }, [activeTab]);
 
   // Theatre mode body class
   useEffect(() => {
@@ -479,8 +449,6 @@ export default function ContentPage() {
                 setSelectedAnswer={setSelectedAnswer}
                 showResult={showResult}
                 handleQuizSubmit={handleQuizSubmit}
-                aiSummary={aiSummary}
-                loadingSummary={loadingSummary}
               />
             </div>
           )}
@@ -499,8 +467,6 @@ export default function ContentPage() {
               setSelectedAnswer={setSelectedAnswer}
               showResult={showResult}
               handleQuizSubmit={handleQuizSubmit}
-              aiSummary={aiSummary}
-              loadingSummary={loadingSummary}
             />
           </div>
         )}
@@ -512,7 +478,6 @@ export default function ContentPage() {
 function TabsSection({
   activeTab, setActiveTab, content, quiz, question,
   selectedAnswer, setSelectedAnswer, showResult, handleQuizSubmit,
-  aiSummary, loadingSummary,
 }: {
   activeTab: Tab;
   setActiveTab: (t: Tab) => void;
@@ -523,8 +488,6 @@ function TabsSection({
   setSelectedAnswer: (n: number) => void;
   showResult: boolean;
   handleQuizSubmit: () => void;
-  aiSummary: string | null;
-  loadingSummary: boolean;
 }) {
   return (
     <>
@@ -533,7 +496,6 @@ function TabsSection({
         {([
           { id: 'description', label: 'Description' },
           { id: 'quiz', label: 'Mini-Quiz' },
-          { id: 'ai-summary', label: 'IA Résumé' },
         ] as { id: Tab; label: string }[]).map(({ id, label }) => (
           <button
             key={id}
@@ -547,7 +509,6 @@ function TabsSection({
                 : 'text-dark-text hover:text-dark-text',
             )}
           >
-            {id === 'ai-summary' && <Sparkles size={10} className="inline mr-1" aria-hidden="true" />}
             {label}
           </button>
         ))}
@@ -643,26 +604,6 @@ function TabsSection({
           </div>
         )}
 
-        {activeTab === 'ai-summary' && (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Sparkles size={14} className="text-brand-orange" />
-              <span className="text-xs font-semibold text-dark-text uppercase tracking-wide">Résumé IA</span>
-            </div>
-            {loadingSummary ? (
-              <div className="flex items-center gap-2 text-dark-text text-sm py-4">
-                <Loader2 size={16} className="animate-spin text-brand-orange" />
-                <span>Génération du résumé...</span>
-              </div>
-            ) : aiSummary ? (
-              <div className="bg-surface-2 rounded-xl p-4 border border-dark-border">
-                <p className="text-dark-text/80 text-sm leading-relaxed whitespace-pre-wrap">{aiSummary}</p>
-              </div>
-            ) : (
-              <p className="text-dark-text text-sm text-center py-8">Résumé non disponible.</p>
-            )}
-          </div>
-        )}
       </div>
     </>
   );

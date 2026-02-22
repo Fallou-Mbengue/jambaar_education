@@ -2,14 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, Zap, MessageSquare, User } from 'lucide-react';
+import { Home, BookOpen, User } from 'lucide-react';
 import { useNotificationsStore } from '@/store/notifications.store';
 
 const NAV_ITEMS = [
   { href: '/home', icon: Home, label: 'Feed' },
-  { href: '/programs', icon: BookOpen, label: 'Programmes' },
-  { href: '/challenges', icon: Zap, label: 'Challenges' },
-  { href: '/assistant', icon: MessageSquare, label: 'IA' },
+  { href: '/parcours', icon: BookOpen, label: 'Programmes' },
   { href: '/profile', icon: User, label: 'Profil' },
 ];
 

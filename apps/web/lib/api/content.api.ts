@@ -18,22 +18,6 @@ export const programsApi = {
     apiClient.post(`/programs/${id}/progress`, data),
 };
 
-export const challengesApi = {
-  getAll: () => apiClient.get('/challenges'),
-  getById: (id: string) => apiClient.get(`/challenges/${id}`),
-  join: (id: string) => apiClient.post(`/challenges/${id}/join`),
-  validateDay: (id: string, data: { dayNumber: number; reflection?: string }) =>
-    apiClient.post(`/challenges/${id}/validate-day`, data),
-};
-
-export const aiApi = {
-  chat: (data: { message: string; conversationId?: string }) =>
-    apiClient.post('/ai/chat', data),
-  summarize: (contentId: string) =>
-    apiClient.post('/ai/summarize', { contentId }),
-  getRecommendations: () => apiClient.get('/ai/recommendations'),
-};
-
 export const notificationsApi = {
   getAll: () => apiClient.get('/notifications'),
   markRead: (id: string) => apiClient.post(`/notifications/${id}/read`),

@@ -77,7 +77,7 @@ export default function ProgramDetailPage() {
         icon={BookOpen}
         title="Programme non trouvé"
         description="Ce programme n'existe pas ou a été supprimé."
-        action={{ label: 'Retour aux programmes', onClick: () => router.push('/programs') }}
+        action={{ label: 'Retour aux programmes', onClick: () => router.push('/parcours') }}
         className="h-full"
       />
     );
@@ -105,7 +105,7 @@ export default function ProgramDetailPage() {
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-dark-border flex-shrink-0">
           <button
-            onClick={() => router.push('/programs')}
+            onClick={() => router.push('/parcours')}
             className="text-dark-text hover:text-dark-text transition-colors"
             aria-label="Retour aux programmes"
           >

@@ -10,9 +10,6 @@ import { UsersModule } from './modules/users/users.module';
 import { ContentModule } from './modules/content/content.module';
 import { FeedModule } from './modules/feed/feed.module';
 import { ProgramsModule } from './modules/programs/programs.module';
-import { ChallengesModule } from './modules/challenges/challenges.module';
-import { GamificationModule } from './modules/gamification/gamification.module';
-import { AiModule } from './modules/ai/ai.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
@@ -32,9 +29,6 @@ import { UploadModule } from './modules/upload/upload.module';
     ContentModule,
     FeedModule,
     ProgramsModule,
-    ChallengesModule,
-    GamificationModule,
-    AiModule,
     BillingModule,
     NotificationsModule,
     DashboardModule,

@@ -15,12 +15,7 @@ export class UsersService {
   async getMe(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        profile: true,
-        gamification: {
-          include: { badges: { include: { badge: true }, take: 10 } },
-        },
-      },
+      include: { profile: true },
     });
     if (!user) throw new NotFoundException('User not found');
 
@@ -60,8 +55,6 @@ export class UsersService {
     });
 
     // Award XP for completing onboarding
-    this.eventEmitter.emit('gamification.awardXp', { userId, action: 'PROFILE_COMPLETED' });
-
     return profile;
   }
 
@@ -70,8 +63,7 @@ export class UsersService {
       where: { id: userId },
       include: {
         profile: true,
-        gamification: { include: { badges: { include: { badge: true } } } },
-        _count: { select: { progresses: true, challengeProgresses: true } },
+        _count: { select: { progresses: true } },
       },
     });
     if (!user) throw new NotFoundException('User not found');
@@ -106,7 +98,6 @@ export class UsersService {
         take: limit,
         include: {
           profile: true,
-          gamification: true,
           _count: { select: { progresses: true } },
         },
         orderBy: { createdAt: 'desc' },

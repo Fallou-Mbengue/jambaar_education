@@ -1,38 +1,19 @@
 'use client';
 
-import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Sparkles,
-  TrendingUp,
-  Zap,
   ChevronRight,
-  Flame,
-  Star,
   BookOpen,
   PlayCircle,
-  Loader2,
   PanelRightClose,
 } from 'lucide-react';
 import { useRightPanelStore } from '@/store/rightPanel.store';
-import { useGamificationStore } from '@/store/gamification.store';
-import apiClient from '@/lib/api/client';
 import clsx from 'clsx';
 
 export function RightPanel() {
   const pathname = usePathname();
   const router = useRouter();
   const { content, isPanelOpen, togglePanel } = useRightPanelStore();
-  const gamification = useGamificationStore((s) => s.profile);
-
-  // Load gamification profile if not set
-  useEffect(() => {
-    if (!gamification) {
-      apiClient.get('/gamification/profile').then((res) => {
-        useGamificationStore.getState().setProfile(res.data.data);
-      }).catch(() => {});
-    }
-  }, [gamification]);
 
   if (!isPanelOpen) {
     return (
@@ -50,9 +31,7 @@ export function RightPanel() {
 
   const isHomePage = pathname === '/home';
   const isContentPage = pathname.startsWith('/content/');
-  const isProgramPage = pathname.startsWith('/programs/') && pathname !== '/programs';
-  const isChallengePage = pathname.startsWith('/challenges/') && pathname !== '/challenges';
-  const isAssistantPage = pathname === '/assistant';
+  const isProgramPage = pathname.startsWith('/parcours/') && pathname !== '/parcours';
 
   return (
     <aside
@@ -62,7 +41,7 @@ export function RightPanel() {
       {/* Panel header */}
       <div className="flex items-center justify-between px-4 h-14 border-b border-dark-border flex-shrink-0">
         <span className="text-xs font-semibold text-dark-text uppercase tracking-wider">
-          {isAssistantPage ? 'Suggestions' : isChallengePage ? 'Challenge du Jour' : 'Contexte'}
+          Contexte
         </span>
         <button
           onClick={togglePanel}
@@ -74,78 +53,6 @@ export function RightPanel() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-
-        {/* ── Gamification streak/XP ── */}
-        {gamification && (
-          <div className="card p-3">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp size={13} className="text-brand-orange" />
-              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">Ma Progression</span>
-            </div>
-            <div className="flex gap-3 mb-3">
-              <div className="flex-1 bg-surface-2 rounded-lg p-2.5 text-center">
-                <div className="flex items-center justify-center gap-1 text-brand-orange mb-1">
-                  <Flame size={13} />
-                  <span className="text-sm font-bold">{gamification.currentStreak}</span>
-                </div>
-                <p className="text-[10px] text-dark-text">Streak</p>
-              </div>
-              <div className="flex-1 bg-surface-2 rounded-lg p-2.5 text-center">
-                <div className="flex items-center justify-center gap-1 text-brand-gold mb-1">
-                  <Star size={13} />
-                  <span className="text-sm font-bold">{gamification.totalXp}</span>
-                </div>
-                <p className="text-[10px] text-dark-text">XP Total</p>
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-[10px] text-dark-text mb-1">
-                <span>{gamification.currentLevel}</span>
-                {gamification.xpToNextLevel > 0 && (
-                  <span>+{gamification.xpToNextLevel} XP</span>
-                )}
-              </div>
-              <div className="bg-surface-3 rounded-full h-1.5">
-                <div
-                  className="bg-brand-orange h-1.5 rounded-full xp-bar-fill"
-                  style={{
-                    width: gamification.xpToNextLevel > 0
-                      ? `${Math.min((gamification.totalXp / (gamification.totalXp + gamification.xpToNextLevel)) * 100, 100)}%`
-                      : '100%',
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── AI Summary (content / home with selected) ── */}
-        {(isContentPage || isHomePage) && (
-          <div className="card p-3">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles size={13} className="text-brand-orange" />
-              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">Résumé IA</span>
-            </div>
-            {content.isLoadingSummary ? (
-              <div className="flex items-center gap-2 text-dark-text text-xs py-2">
-                <Loader2 size={13} className="animate-spin text-brand-orange" />
-                <span>Génération en cours...</span>
-              </div>
-            ) : content.aiSummary ? (
-              <p className="text-xs text-dark-text leading-relaxed whitespace-pre-wrap">
-                {content.aiSummary}
-              </p>
-            ) : content.contentId ? (
-              <p className="text-xs text-dark-text italic">
-                Sélectionne un contenu pour voir le résumé IA.
-              </p>
-            ) : (
-              <p className="text-xs text-dark-text italic">
-                Clique sur un contenu pour voir le résumé IA.
-              </p>
-            )}
-          </div>
-        )}
 
         {/* ── Content progression (if in program/content) ── */}
         {(isProgramPage || isContentPage) && content.progression && (
@@ -163,33 +70,6 @@ export function RightPanel() {
                 className="bg-brand-green h-1.5 rounded-full xp-bar-fill"
                 style={{ width: `${content.progression.percent}%` }}
               />
-            </div>
-          </div>
-        )}
-
-        {/* ── Challenge du Jour ── */}
-        {isChallengePage && content.challengeDay && (
-          <div className="card p-3 border-brand-orange/20">
-            <div className="flex items-center gap-2 mb-3">
-              <Zap size={13} className="text-brand-orange" />
-              <span className="text-xs font-semibold text-gray-800 uppercase tracking-wide">
-                Challenge du Jour
-              </span>
-            </div>
-            <div className="flex items-baseline gap-1 mb-2">
-              <span className="text-2xl font-black text-brand-orange">
-                {content.challengeDay.dayNumber}
-              </span>
-              <span className="text-dark-text text-xs">/ {content.challengeDay.total} jours</span>
-            </div>
-            <p className="text-sm text-gray-800 font-medium mb-1">
-              {content.challengeDay.title}
-            </p>
-            <div className="flex items-center gap-1 mt-2">
-              <Star size={11} className="text-brand-gold" />
-              <span className="text-xs text-brand-gold font-medium">
-                +{content.challengeDay.xpReward} XP
-              </span>
             </div>
           </div>
         )}
@@ -226,16 +106,14 @@ export function RightPanel() {
         )}
 
         {/* ── Quick actions ── */}
-        {!content.contentId && !isChallengePage && !isAssistantPage && (
+        {!content.contentId && (
           <div className="card p-3">
             <p className="text-xs font-semibold text-gray-800 uppercase tracking-wide mb-3">
               Accès Rapide
             </p>
             <div className="space-y-1.5">
               {[
-                { href: '/programs', icon: BookOpen, label: 'Mes Programmes', color: 'text-brand-orange' },
-                { href: '/challenges', icon: Zap, label: 'Challenges actifs', color: 'text-brand-gold' },
-                { href: '/assistant', icon: Sparkles, label: 'Poser une question', color: 'text-brand-green' },
+                { href: '/parcours', icon: BookOpen, label: 'Mes Programmes', color: 'text-brand-orange' },
               ].map(({ href, icon: Icon, label, color }) => (
                 <button
                   key={href}
