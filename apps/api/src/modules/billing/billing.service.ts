@@ -219,7 +219,7 @@ export class BillingService {
   async getSubscriptionStatus(userId: string) {
     const subscription = await this.prisma.subscription.findFirst({
       where: { userId },
-      include: { plan: true, payments: { orderBy: { createdAt: 'desc' }, take: 1 } },
+      include: { plan: true, payments: { orderBy: { createdAt: 'desc' }, take: 20 } },
       orderBy: { createdAt: 'desc' },
     });
 

@@ -43,7 +43,8 @@ export const billingApi = {
   getPlans: () => apiClient.get('/billing/plans'),
   subscribe: (data: { planId: string; provider: string; phoneNumber: string }) =>
     apiClient.post('/billing/subscribe', data),
-  getSubscription: () => apiClient.get('/billing/subscription'),
+  getStatus: () => apiClient.get('/billing/status'),
+  getPayment: (id: string) => apiClient.get(`/billing/payment/${id}`),
 };
 
 export const dashboardApi = {

@@ -45,6 +45,14 @@ body {
   background: #6B7280;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* ─── Web Shell Layout ───────────────────────────────── */
 .app-shell {
   display: flex;

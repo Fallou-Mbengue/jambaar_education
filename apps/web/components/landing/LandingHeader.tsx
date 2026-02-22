@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, ChevronDown, Bell, User, LogOut, BookOpen, Settings } from 'lucide-react';
+import { Menu, X, ChevronDown, Bell, User, LogOut, BookOpen } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuthStore } from '@/store/auth.store';
 import { authApi } from '@/lib/api/auth.api';
@@ -186,14 +186,6 @@ export function LandingHeader() {
                           <User size={16} className="text-gray-400" />
                           Mon profil
                         </Link>
-                        <Link
-                          href="/billing"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1E1E1E] hover:bg-gray-50 transition-colors"
-                          onClick={() => setProfileOpen(false)}
-                        >
-                          <Settings size={16} className="text-gray-400" />
-                          Abonnement
-                        </Link>
                         <div className="border-t border-gray-100 mt-1 pt-1">
                           <button
                             type="button"
@@ -316,9 +308,6 @@ export function LandingHeader() {
                 </Link>
                 <Link href="/profile" className="px-4 py-3 text-base font-medium text-[#1E1E1E] hover:bg-gray-100 rounded-lg flex items-center gap-3" onClick={() => setMobileOpen(false)}>
                   <User size={18} className="text-gray-400" /> Mon profil
-                </Link>
-                <Link href="/billing" className="px-4 py-3 text-base font-medium text-[#1E1E1E] hover:bg-gray-100 rounded-lg flex items-center gap-3" onClick={() => setMobileOpen(false)}>
-                  <Settings size={18} className="text-gray-400" /> Abonnement
                 </Link>
               </>
             )}

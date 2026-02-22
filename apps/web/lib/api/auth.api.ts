@@ -20,3 +20,20 @@ export const authApi = {
   refresh: () => apiClient.post('/auth/refresh'),
   getMe: () => apiClient.get('/users/me'),
 };
+
+export interface UpdateProfileDto {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  bio?: string;
+  jobTitle?: string;
+  company?: string;
+  country?: string;
+}
+
+export const usersApi = {
+  getMe: () => apiClient.get('/users/me'),
+  updateProfile: (dto: UpdateProfileDto) => apiClient.patch('/users/me/profile', dto),
+  changePassword: (dto: { oldPassword: string; newPassword: string }) =>
+    apiClient.post('/auth/change-password', dto),
+};
