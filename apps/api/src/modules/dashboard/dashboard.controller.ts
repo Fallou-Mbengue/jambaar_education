@@ -16,6 +16,18 @@ export class DashboardController {
     return this.dashboardService.getKpis();
   }
 
+  @Get('recent-transactions')
+  @ApiOperation({ summary: 'Get recent transactions' })
+  getRecentTransactions(@Query('limit') limit?: string) {
+    return this.dashboardService.getRecentTransactions(limit ? parseInt(limit) : 5);
+  }
+
+  @Get('recent-users')
+  @ApiOperation({ summary: 'Get recent users' })
+  getRecentUsers(@Query('limit') limit?: string) {
+    return this.dashboardService.getRecentUsers(limit ? parseInt(limit) : 5);
+  }
+
   @Get('users')
   @ApiOperation({ summary: 'List users with progress (dashboard)' })
   getUserProgress(

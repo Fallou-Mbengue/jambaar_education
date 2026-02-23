@@ -10,11 +10,13 @@
     "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
     "@jambaar/shared": "workspace:*",
     "@tanstack/react-query": "^5.29.0",
     "@tanstack/react-query-devtools": "^5.29.0",
     "axios": "^1.6.8",
     "clsx": "^2.1.0",
+    "date-fns": "^4.1.0",
     "jose": "^5.2.4",
     "lucide-react": "^0.368.0",
     "next": "^14.2.3",
@@ -23,8 +25,7 @@
     "react-hook-form": "^7.51.3",
     "tailwind-merge": "^2.2.2",
     "zod": "^3.22.4",
-    "zustand": "^4.5.2",
-    "@hookform/resolvers": "^3.3.4"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@types/node": "^20.12.0",

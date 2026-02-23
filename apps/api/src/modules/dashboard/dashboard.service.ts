@@ -9,15 +9,22 @@ export class DashboardService {
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const previousMonthStart = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+    const previousMonthEnd = thirtyDaysAgo;
 
     const [
       totalUsers,
       activeUsers30d,
       activeUsers7d,
+      previousMonthUsers,
       totalContent,
       publishedContent,
+      previousMonthContent,
       activeSubscriptions,
       totalRevenue,
+      previousMonthRevenue,
+      totalPayments,
+      previousMonthPayments,
     ] = await Promise.all([
       this.prisma.user.count({ where: { role: 'USER' } }),
       this.prisma.user.count({
@@ -26,24 +33,114 @@ export class DashboardService {
       this.prisma.user.count({
         where: { role: 'USER', lastLoginAt: { gte: sevenDaysAgo } },
       }),
+      this.prisma.user.count({
+        where: { role: 'USER', createdAt: { gte: previousMonthStart, lt: previousMonthEnd } },
+      }),
       this.prisma.content.count(),
       this.prisma.content.count({ where: { status: 'PUBLISHED' } }),
+      this.prisma.content.count({
+        where: { createdAt: { gte: previousMonthStart, lt: previousMonthEnd } },
+      }),
       this.prisma.subscription.count({ where: { status: 'ACTIVE', endDate: { gt: now } } }),
       this.prisma.payment
         .aggregate({ where: { status: 'SUCCESS' }, _sum: { amountXof: true } })
         .then((r) => r._sum.amountXof ?? 0),
+      this.prisma.payment
+        .aggregate({
+          where: { status: 'SUCCESS', createdAt: { gte: previousMonthStart, lt: previousMonthEnd } },
+          _sum: { amountXof: true },
+        })
+        .then((r) => r._sum.amountXof ?? 0),
+      this.prisma.payment.count({ where: { status: 'SUCCESS' } }),
+      this.prisma.payment.count({
+        where: { status: 'SUCCESS', createdAt: { gte: previousMonthStart, lt: previousMonthEnd } },
+      }),
     ]);
+
+    // Calculate trends
+    const userTrend = previousMonthUsers > 0
+      ? Math.round(((totalUsers - previousMonthUsers) / previousMonthUsers) * 100)
+      : 0;
+    const contentTrend = previousMonthContent > 0
+      ? Math.round(((publishedContent - previousMonthContent) / previousMonthContent) * 100)
+      : 0;
+    const revenueTrend = previousMonthRevenue > 0
+      ? Math.round(((totalRevenue - previousMonthRevenue) / previousMonthRevenue) * 100)
+      : 0;
+    const paymentTrend = previousMonthPayments > 0
+      ? Math.round(((totalPayments - previousMonthPayments) / previousMonthPayments) * 100)
+      : 0;
 
     return {
       users: {
         total: totalUsers,
+        trend: userTrend,
         active30d: activeUsers30d,
         active7d: activeUsers7d,
         retentionRate30d: totalUsers > 0 ? Math.round((activeUsers30d / totalUsers) * 100) : 0,
       },
-      content: { total: totalContent, published: publishedContent },
-      billing: { activeSubscriptions, totalRevenueXof: totalRevenue },
+      content: {
+        total: publishedContent,
+        trend: contentTrend,
+        published: publishedContent,
+      },
+      payments: {
+        total: totalPayments,
+        trend: paymentTrend,
+      },
+      billing: {
+        activeSubscriptions,
+        totalRevenueXof: totalRevenue,
+        trend: revenueTrend,
+      },
     };
+  }
+
+  async getRecentTransactions(limit = 5) {
+    const payments = await this.prisma.payment.findMany({
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          include: { profile: true },
+        },
+        subscription: {
+          include: { plan: true },
+        },
+      },
+    });
+
+    return payments.map((payment) => ({
+      id: payment.id,
+      transactionRef: payment.providerRef || payment.id.slice(0, 8).toUpperCase(),
+      user: {
+        id: payment.user.id,
+        firstName: payment.user.profile?.firstName || 'Utilisateur',
+        lastName: payment.user.profile?.lastName || '',
+        email: payment.user.email,
+      },
+      courseName: payment.subscription?.plan?.name || 'Abonnement',
+      amount: payment.amountXof,
+      status: payment.status,
+      createdAt: payment.createdAt,
+    }));
+  }
+
+  async getRecentUsers(limit = 5) {
+    const users = await this.prisma.user.findMany({
+      where: { role: 'USER' },
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: { profile: true },
+    });
+
+    return users.map((user) => ({
+      id: user.id,
+      firstName: user.profile?.firstName || 'Utilisateur',
+      lastName: user.profile?.lastName || '',
+      email: user.email,
+      createdAt: user.createdAt,
+    }));
   }
 
   async getUserProgress(params: {
