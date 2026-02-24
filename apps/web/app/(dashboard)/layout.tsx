@@ -20,7 +20,7 @@ import { useAuthStore } from '@/store/auth.store';
 const NAV_ITEMS = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
   { href: '/dashboard/users', icon: Users, label: 'Utilisateurs' },
-  { href: '/dashboard/programs', icon: BookOpen, label: 'Parcours (Cours)' },
+  { href: '/dashboard/parcours', icon: BookOpen, label: 'Parcours (Cours)' },
   { href: '/dashboard/billing', icon: CreditCard, label: 'Paiements' },
 ];
 

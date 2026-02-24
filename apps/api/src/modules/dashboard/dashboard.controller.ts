@@ -79,4 +79,26 @@ export class DashboardController {
       limit: limit ? parseInt(limit) : undefined,
     });
   }
+
+  @Get('programs/kpis')
+  @ApiOperation({ summary: 'Get program KPIs' })
+  getProgramKpis() {
+    return this.dashboardService.getProgramKpis();
+  }
+
+  @Get('programs')
+  @ApiOperation({ summary: 'List all programs (admin)' })
+  getPrograms(
+    @Query('search') search?: string,
+    @Query('status') status?: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.dashboardService.getPrograms({
+      search,
+      status,
+      page: page ? parseInt(page) : undefined,
+      limit: limit ? parseInt(limit) : undefined,
+    });
+  }
 }

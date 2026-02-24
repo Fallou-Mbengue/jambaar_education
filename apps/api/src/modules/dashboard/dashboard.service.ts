@@ -280,4 +280,98 @@ export class DashboardService {
 
     return { items, total, page, limit, pages: Math.ceil(total / limit) };
   }
+
+  async getProgramKpis() {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const previousMonthStart = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+    const previousMonthEnd = thirtyDaysAgo;
+
+    const [
+      totalPrograms,
+      publishedPrograms,
+      previousPublished,
+      paidPrograms,
+      previousPaid,
+      freePrograms,
+      previousFree,
+      totalContent,
+      previousContent,
+    ] = await Promise.all([
+      this.prisma.program.count(),
+      this.prisma.program.count({ where: { status: 'ACTIVE' } }),
+      this.prisma.program.count({
+        where: { status: 'ACTIVE', createdAt: { gte: previousMonthStart, lt: previousMonthEnd } },
+      }),
+      this.prisma.program.count({ where: { isPremium: true } }),
+      this.prisma.program.count({
+        where: { isPremium: true, createdAt: { gte: previousMonthStart, lt: previousMonthEnd } },
+      }),
+      this.prisma.program.count({ where: { isPremium: false } }),
+      this.prisma.program.count({
+        where: { isPremium: false, createdAt: { gte: previousMonthStart, lt: previousMonthEnd } },
+      }),
+      this.prisma.content.count({ where: { status: 'PUBLISHED' } }),
+      this.prisma.content.count({
+        where: { status: 'PUBLISHED', createdAt: { gte: previousMonthStart, lt: previousMonthEnd } },
+      }),
+    ]);
+
+    const publishedTrend = previousPublished > 0
+      ? Math.round(((publishedPrograms - previousPublished) / previousPublished) * 100)
+      : publishedPrograms > 0 ? 100 : 0;
+    const paidTrend = previousPaid > 0
+      ? Math.round(((paidPrograms - previousPaid) / previousPaid) * 100)
+      : paidPrograms > 0 ? 100 : 0;
+    const freeTrend = previousFree > 0
+      ? Math.round(((freePrograms - previousFree) / previousFree) * 100)
+      : freePrograms > 0 ? 100 : 0;
+    const contentTrend = previousContent > 0
+      ? Math.round(((totalContent - previousContent) / previousContent) * 100)
+      : totalContent > 0 ? 100 : 0;
+
+    return {
+      totalCourses: { value: totalContent, trend: contentTrend },
+      published: { value: publishedPrograms, trend: publishedTrend },
+      paid: { value: paidPrograms, trend: paidTrend },
+      free: { value: freePrograms, trend: freeTrend },
+    };
+  }
+
+  async getPrograms(params: {
+    search?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const { search, status, page = 1, limit = 8 } = params;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+    if (status && ['ACTIVE', 'INACTIVE'].includes(status)) {
+      where.status = status;
+    }
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.program.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          modules: true,
+          _count: { select: { modules: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.program.count({ where }),
+    ]);
+
+    return { items, total, page, limit, pages: Math.ceil(total / limit) };
+  }
 }
