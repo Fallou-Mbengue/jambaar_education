@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MinioService } from '../../minio/minio.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import type { UserProgress, Program, ProgramModule, Module } from '@prisma/client';
 
 @Injectable()
 export class ProgramsService {
@@ -121,10 +122,10 @@ export class ProgramsService {
     const userProgress = await this.prisma.userProgress.findMany({
       where: { userId, programId: { in: programs.map((p) => p.id) } },
     });
-    const progressMap = new Map(userProgress.map((p) => [p.programId, p]));
+    const progressMap = new Map(userProgress.map((p: UserProgress) => [p.programId, p]));
 
     return Promise.all(
-      programs.map(async (p) => ({
+      programs.map(async (p: Program & { thumbnailKey: string | null; modules: ProgramModule[]; _count: { modules: number } }) => ({
         ...p,
         thumbnailUrl: p.thumbnailKey
           ? await this.minio.getPresignedReadUrl(p.thumbnailKey)
@@ -185,14 +186,14 @@ export class ProgramsService {
 
     // Count completed content in this program
     const programContentIds = await this.prisma.module.findMany({
-      where: { courseId: { in: program.modules.map((m) => m.courseId) } },
+      where: { courseId: { in: program.modules.map((m: ProgramModule) => m.courseId) } },
       select: { contentId: true },
     });
 
     const completedCount = await this.prisma.userProgress.count({
       where: {
         userId,
-        contentId: { in: programContentIds.map((m) => m.contentId) },
+        contentId: { in: programContentIds.map((m: Pick<Module, 'contentId'>) => m.contentId) },
         isCompleted: true,
       },
     });

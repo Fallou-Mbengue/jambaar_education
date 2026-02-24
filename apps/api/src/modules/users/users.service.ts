@@ -106,7 +106,7 @@ export class UsersService {
     ]);
 
     return {
-      items: users.map(({ passwordHash: _ph, ...u }) => u),
+      items: users.map(({ passwordHash: _ph, ...u }: { passwordHash: string; [k: string]: unknown }) => u),
       total,
       page,
       limit,
