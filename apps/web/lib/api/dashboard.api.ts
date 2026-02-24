@@ -47,6 +47,32 @@ export interface RecentUser {
   createdAt: string;
 }
 
+export interface DashboardUser {
+  id: string;
+  email: string;
+  role: 'USER' | 'COACH' | 'ADMIN';
+  isActive: boolean;
+  createdAt: string;
+  profile?: {
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    avatarKey?: string;
+  };
+  completedContent: number;
+  activeSubscription?: {
+    plan: { name: string };
+  } | null;
+}
+
+export interface DashboardUserList {
+  items: DashboardUser[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
+}
+
 export const dashboardApi = {
   async getKpis(): Promise<DashboardKPIs> {
     const response = await apiClient.get('/dashboard/kpis');
@@ -60,6 +86,27 @@ export const dashboardApi = {
 
   async getRecentUsers(limit = 5): Promise<RecentUser[]> {
     const response = await apiClient.get(`/dashboard/recent-users?limit=${limit}`);
+    return response.data.data;
+  },
+
+  async getUsers(params: {
+    search?: string;
+    role?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<DashboardUserList> {
+    const response = await apiClient.get('/dashboard/users', { params });
+    return response.data.data;
+  },
+
+  async toggleUserStatus(userId: string): Promise<{ id: string; isActive: boolean }> {
+    const response = await apiClient.patch(`/dashboard/users/${userId}/toggle-status`);
+    return response.data.data;
+  },
+
+  async deleteUser(userId: string): Promise<{ deleted: boolean }> {
+    const response = await apiClient.delete(`/dashboard/users/${userId}`);
     return response.data.data;
   },
 };

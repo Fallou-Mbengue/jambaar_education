@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Patch, Delete, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -32,14 +32,30 @@ export class DashboardController {
   @ApiOperation({ summary: 'List users with progress (dashboard)' })
   getUserProgress(
     @Query('search') search?: string,
+    @Query('role') role?: string,
+    @Query('status') status?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     return this.dashboardService.getUserProgress({
       search,
+      role: role || undefined,
+      status: status || undefined,
       page: page ? parseInt(page) : undefined,
       limit: limit ? parseInt(limit) : undefined,
     });
+  }
+
+  @Patch('users/:id/toggle-status')
+  @ApiOperation({ summary: 'Toggle user active/banned status' })
+  toggleUserStatus(@Param('id') id: string) {
+    return this.dashboardService.toggleUserStatus(id);
+  }
+
+  @Delete('users/:id')
+  @ApiOperation({ summary: 'Delete a user' })
+  deleteUser(@Param('id') id: string) {
+    return this.dashboardService.deleteUser(id);
   }
 
   @Get('users/:id/skills')

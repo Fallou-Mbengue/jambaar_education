@@ -145,21 +145,36 @@ export class DashboardService {
 
   async getUserProgress(params: {
     search?: string;
+    role?: string;
+    status?: string;
     page?: number;
     limit?: number;
   }) {
-    const { search, page = 1, limit = 20 } = params;
+    const { search, role, status, page = 1, limit = 20 } = params;
     const skip = (page - 1) * limit;
 
-    const where = search
-      ? {
-          role: 'USER' as const,
-          OR: [
-            { email: { contains: search, mode: 'insensitive' as const } },
-            { profile: { firstName: { contains: search, mode: 'insensitive' as const } } },
-          ],
-        }
-      : { role: 'USER' as const };
+    const where: Record<string, unknown> = {};
+
+    // Role filter
+    if (role && ['USER', 'COACH', 'ADMIN'].includes(role)) {
+      where.role = role;
+    }
+
+    // Status filter (isActive)
+    if (status === 'active') {
+      where.isActive = true;
+    } else if (status === 'banned') {
+      where.isActive = false;
+    }
+
+    // Search
+    if (search) {
+      where.OR = [
+        { email: { contains: search, mode: 'insensitive' } },
+        { profile: { firstName: { contains: search, mode: 'insensitive' } } },
+        { profile: { lastName: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
 
     const [users, total] = await Promise.all([
       this.prisma.user.findMany({
@@ -195,6 +210,24 @@ export class DashboardService {
       limit,
       pages: Math.ceil(total / limit),
     };
+  }
+
+  async toggleUserStatus(userId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('User not found');
+
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: { isActive: !user.isActive },
+      include: { profile: true },
+    });
+
+    return { id: updated.id, isActive: updated.isActive };
+  }
+
+  async deleteUser(userId: string) {
+    await this.prisma.user.delete({ where: { id: userId } });
+    return { deleted: true };
   }
 
   async getUserSoftSkillScores(userId: string) {
