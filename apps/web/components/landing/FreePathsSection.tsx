@@ -1,67 +1,120 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, Bookmark, Share2, HelpCircle } from 'lucide-react';
+import { BookOpen, Clock, ArrowRight } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-const FREE_PATHS = Array.from({ length: 8 }, (_, i) => ({
-  id: i + 1,
-  title: 'IMPACTEZ LA COMMUNAUTE MAINTENANT !',
-  likes: '1.2k',
-  saves: '230',
-  shares: '13',
-}));
-
-function FreePathCard({
-  title,
-  likes,
-  saves,
-  shares,
-}: {
+interface PublicProgram {
+  id: string;
   title: string;
-  likes: string;
-  saves: string;
-  shares: string;
-}) {
+  description: string | null;
+  isPremium: boolean;
+  durationDays: number | null;
+  tags: string[];
+  thumbnailUrl: string | null;
+  _count: { modules: number };
+}
+
+function FreePathCard({ program }: { program: PublicProgram }) {
+  const category = program.tags[0] || 'Formation';
+
   return (
-    <article className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow flex flex-col">
-      <div className="relative aspect-[4/3] bg-gradient-to-br from-[#9333EA] to-landing-orange">
+    <article className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-all group flex flex-col">
+      <div className="relative aspect-[4/3] bg-gradient-to-br from-[#5D2A87] to-[#FF7A00]">
+        {program.thumbnailUrl ? (
+          <img
+            src={program.thumbnailUrl}
+            alt={program.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-white/20 text-6xl font-bold">
+              {program.title.charAt(0)}
+            </span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         <div className="absolute top-3 left-3">
-          <span className="px-2.5 py-1 rounded bg-landing-orange text-white text-xs font-bold">NOUVEAU</span>
+          <span className="px-2.5 py-1 rounded bg-[#FF7A00] text-white text-xs font-bold uppercase">
+            {category}
+          </span>
         </div>
-        <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-[#9333EA]/90 flex items-center justify-center">
-          <HelpCircle size={18} className="text-white" />
-        </div>
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs font-semibold inline-flex items-baseline gap-0.5">
-          <span className="text-[#9F7AEA]">Jambaar</span>
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-landing-orange shrink-0" aria-hidden />
+        <div className="absolute top-3 right-3">
+          <span className="px-2.5 py-1 rounded bg-green-500 text-white text-xs font-bold">
+            GRATUIT
+          </span>
         </div>
       </div>
       <div className="p-4 flex-1 flex flex-col">
-        <h3 className="font-bold text-[#1E1E1E] text-sm mb-3 line-clamp-2">{title}</h3>
-        <div className="flex items-center gap-4 text-gray-500 text-xs mb-4">
+        <h3 className="font-bold text-[#1E1E1E] text-sm mb-2 line-clamp-2 group-hover:text-[#5D2A87] transition-colors">
+          {program.title}
+        </h3>
+        {program.description && (
+          <p className="text-gray-500 text-xs mb-3 line-clamp-2">{program.description}</p>
+        )}
+        <div className="flex items-center gap-4 text-gray-400 text-xs mb-4 mt-auto">
           <span className="flex items-center gap-1">
-            <Heart size={14} className="text-gray-400" /> {likes}
+            <BookOpen size={14} />
+            {program._count.modules} module{program._count.modules > 1 ? 's' : ''}
           </span>
-          <span className="flex items-center gap-1">
-            <Bookmark size={14} className="text-gray-400" /> {saves}
-          </span>
-          <span className="flex items-center gap-1">
-            <Share2 size={14} className="text-gray-400" /> {shares}
-          </span>
+          {program.durationDays && (
+            <span className="flex items-center gap-1">
+              <Clock size={14} />
+              {program.durationDays}j
+            </span>
+          )}
         </div>
         <Link
-          href="/auth/signup"
-          className="mt-auto inline-flex items-center justify-center h-10 w-full text-sm font-semibold text-white bg-[#9333EA] hover:bg-[#7E22CE] rounded-lg transition-colors"
+          href={`/parcours/${program.id}`}
+          className="inline-flex items-center justify-center gap-2 h-10 w-full text-sm font-semibold text-white bg-[#5D2A87] hover:bg-[#4A1F6E] rounded-lg transition-colors"
         >
-          S&apos;inscrire
+          Découvrir
+          <ArrowRight size={16} />
         </Link>
       </div>
     </article>
   );
 }
 
+function FreePathCardSkeleton() {
+  return (
+    <div className="bg-white rounded-xl overflow-hidden border border-gray-200 animate-pulse">
+      <div className="aspect-[4/3] bg-gray-200" />
+      <div className="p-4 space-y-3">
+        <div className="h-4 bg-gray-200 rounded w-3/4" />
+        <div className="h-3 bg-gray-100 rounded w-full" />
+        <div className="h-3 bg-gray-100 rounded w-1/2" />
+        <div className="h-10 bg-gray-200 rounded-lg mt-4" />
+      </div>
+    </div>
+  );
+}
+
 export function FreePathsSection() {
+  const [programs, setPrograms] = useState<PublicProgram[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        const res = await fetch('/api/v1/programs/public');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const json = await res.json();
+        const all: PublicProgram[] = json.data ?? [];
+        const freePrograms = all.filter((p) => !p.isPremium);
+        setPrograms(freePrograms.slice(0, 8));
+      } catch {
+        setPrograms([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPrograms();
+  }, []);
+
+  if (!isLoading && programs.length === 0) return null;
+
   return (
     <section className="py-16 lg:py-20 bg-white landing-section">
       <div className="landing-container">
@@ -74,20 +127,14 @@ export function FreePathsSection() {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          {FREE_PATHS.map((p) => (
-            <FreePathCard
-              key={p.id}
-              title={p.title}
-              likes={p.likes}
-              saves={p.saves}
-              shares={p.shares}
-            />
-          ))}
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, i) => <FreePathCardSkeleton key={i} />)
+            : programs.map((p) => <FreePathCard key={p.id} program={p} />)}
         </div>
         <div className="text-center">
           <Link
             href="/parcours"
-            className="inline-flex items-center justify-center h-12 px-8 text-base font-semibold text-white bg-landing-orange hover:bg-landing-orange-hover rounded-lg transition-colors"
+            className="inline-flex items-center justify-center h-12 px-8 text-base font-semibold text-white bg-[#FF7A00] hover:bg-[#E86E00] rounded-lg transition-colors"
           >
             Toutes les formations
           </Link>

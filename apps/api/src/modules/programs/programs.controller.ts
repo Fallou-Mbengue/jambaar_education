@@ -113,8 +113,8 @@ export class ProgramsController {
   @Delete('admin/:id')
   @UseGuards(RolesGuard)
   @Roles('ADMIN', 'COACH')
-  @ApiOperation({ summary: 'Delete a draft program (Admin/Coach only)' })
-  deleteDraftProgram(@Param('id') id: string) {
+  @ApiOperation({ summary: 'Delete a program and all related data (Admin/Coach only)' })
+  deleteProgram(@Param('id') id: string) {
     return this.programsService.deleteDraft(id);
   }
 }

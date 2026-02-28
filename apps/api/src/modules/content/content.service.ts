@@ -20,7 +20,6 @@ export class ContentService {
       },
     });
     if (!content) throw new NotFoundException('Content not found');
-    if (content.status !== 'PUBLISHED') throw new NotFoundException('Content not available');
 
     const [userProgress, isLiked, isSaved] = await Promise.all([
       this.prisma.userProgress.findUnique({
@@ -49,9 +48,15 @@ export class ContentService {
     const thumbnailUrl = content.thumbnailKey
       ? await this.minio.getPresignedReadUrl(content.thumbnailKey)
       : null;
-    const videoUrl = content.videoKey
-      ? await this.minio.getPresignedReadUrl(content.videoKey)
-      : null;
+
+    // videoKey may be either a MinIO object key or an external URL (YouTube, etc.)
+    let videoUrl: string | null = null;
+    if (content.videoKey) {
+      const isExternalUrl = content.videoKey.startsWith('http://') || content.videoKey.startsWith('https://');
+      videoUrl = isExternalUrl
+        ? content.videoKey
+        : await this.minio.getPresignedReadUrl(content.videoKey);
+    }
 
     return {
       ...content,

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AlertCircle, Rocket, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import apiClient from '@/lib/api/client';
 import { ProgramFormData } from '../page';
 
 interface StepThreeProps {
@@ -27,7 +28,7 @@ export default function StepThree({ data, onUpdate, onBack }: StepThreeProps) {
     setIsSubmitting(true);
 
     try {
-      // Prepare data for API
+      // Préparation des données pour l'API
       const programData = {
         title: data.title,
         description: data.description,
@@ -55,40 +56,24 @@ export default function StepThree({ data, onUpdate, onBack }: StepThreeProps) {
         paywallLessonIndex: data.paywallLessonIndex,
       };
 
-      // Create program
-      const createRes = await fetch('/api/programs/admin/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(programData),
-      });
+      // Création du programme via l'API Nest (proxy /api/v1)
+      const createRes = await apiClient.post('/programs/admin/create', programData);
+      const program = createRes.data.data as { id: string };
 
-      if (!createRes.ok) {
-        const error = await createRes.json();
-        throw new Error(error.message || 'Failed to create program');
-      }
-
-      const program = await createRes.json();
-
-      // If not draft, publish immediately
+      // Si ce n'est pas un brouillon, on publie immédiatement
       if (!isDraft) {
-        const publishRes = await fetch(`/api/programs/admin/${program.id}/publish`, {
-          method: 'POST',
-        });
-
-        if (!publishRes.ok) {
-          throw new Error('Failed to publish program');
-        }
+        await apiClient.post(`/programs/admin/${program.id}/publish`);
       }
 
-      // Redirect to programs list
-      router.push('/dashboard/parcours');
-    } catch (error) {
+      // Redirection vers la page détail du parcours créé pour afficher toutes les informations
+      router.push(`/dashboard/parcours/${program.id}`);
+    } catch (error: any) {
       console.error('Submit error:', error);
-      alert(
-        error instanceof Error
-          ? error.message
-          : 'Erreur lors de la création du parcours'
-      );
+      const message =
+        error?.response?.data?.message ??
+        error?.message ??
+        'Erreur lors de la création du parcours';
+      alert(Array.isArray(message) ? message.join('\n') : message);
     } finally {
       setIsSubmitting(false);
     }

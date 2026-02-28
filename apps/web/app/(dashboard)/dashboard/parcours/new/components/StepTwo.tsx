@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, GripVertical, Pencil, Trash2, ChevronDown, ChevronUp, Play, FileText, CheckCircle, Lock } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { Plus, GripVertical, Trash2, ChevronDown, ChevronUp, Play, FileText, CheckCircle, Lock, Upload, Link as LinkIcon } from 'lucide-react';
+import apiClient from '@/lib/api/client';
 import { ProgramFormData, ModuleData, LessonData } from '../page';
 
 interface StepTwoProps {
@@ -47,14 +48,56 @@ export default function StepTwo({ data, onUpdate, onNext, onBack }: StepTwoProps
     onUpdate({ modules: data.modules.filter((m) => m.id !== moduleId) });
   };
 
+  const [pdfUploadingLessonId, setPdfUploadingLessonId] = useState<string | null>(null);
+
+  const uploadPdf = useCallback(
+    async (moduleId: string, lessonId: string, file: File) => {
+      if (!file.type.includes('pdf')) return;
+      setPdfUploadingLessonId(lessonId);
+      try {
+        const presignRes = await apiClient.post('/upload/presign', {
+          filename: file.name,
+          contentType: file.type,
+          prefix: 'programs/pdfs',
+        });
+        const { presignedUrl, objectKey } = presignRes.data.data as {
+          presignedUrl: string;
+          objectKey: string;
+        };
+        const uploadRes = await fetch(presignedUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type },
+          body: file,
+        });
+        if (!uploadRes.ok) throw new Error('Upload failed');
+        await apiClient.post('/upload/confirm', { objectKey });
+        const module = data.modules.find((m) => m.id === moduleId);
+        if (module) {
+          const updatedLessons = module.lessons.map((l) =>
+            l.id === lessonId
+              ? { ...l, pdfKey: objectKey, title: file.name.replace(/\.pdf$/i, '') || l.title }
+              : l
+          );
+          updateModule(moduleId, { lessons: updatedLessons });
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Erreur lors du téléversement du PDF.');
+      } finally {
+        setPdfUploadingLessonId(null);
+      }
+    },
+    [data.modules, updateModule],
+  );
+
   const addLesson = (moduleId: string, type: 'VIDEO' | 'PDF' | 'EXERCISE') => {
     const module = data.modules.find((m) => m.id === moduleId);
     if (!module) return;
 
     const lessonTitles = {
-      VIDEO: 'Vidéo : Nouvelle leçon',
-      PDF: 'PDF : Nouveau document',
-      EXERCISE: 'Exercice : Nouveau quiz',
+      VIDEO: 'Leçon vidéo',
+      PDF: 'Ressource PDF',
+      EXERCISE: 'Exercice / Quiz',
     };
 
     const newLesson: LessonData = {
@@ -220,13 +263,6 @@ export default function StepTwo({ data, onUpdate, onNext, onBack }: StepTwoProps
                   </span>
                   <button
                     type="button"
-                    onClick={() => updateModule(module.id, { title: prompt('Nouveau titre:', module.title) || module.title })}
-                    className="p-2 text-white/40 hover:text-white/80 hover:bg-white/[0.06] rounded transition-colors"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => deleteModule(module.id)}
                     className="p-2 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
                   >
@@ -272,50 +308,110 @@ export default function StepTwo({ data, onUpdate, onNext, onBack }: StepTwoProps
                             </div>
                           )}
 
-                          <div className="flex items-center gap-3 p-3 bg-[#1A1A1A] rounded-lg">
-                            <div className={`w-8 h-8 rounded flex items-center justify-center ${getLessonIconColor(lesson.type)}`}>
-                              {getLessonIcon(lesson.type)}
-                            </div>
-                            <input
-                              type="text"
-                              value={lesson.title}
-                              onChange={(e) =>
-                                updateLesson(module.id, lesson.id, { title: e.target.value })
-                              }
-                              className="flex-1 bg-transparent text-white/90 text-sm focus:outline-none"
-                              placeholder="Titre de la leçon"
-                            />
-                            {isBeforePaywall ? (
-                              <span className="px-3 py-1 bg-[#FF7A00]/15 text-[#FF7A00] text-xs font-medium rounded border border-[#FF7A00]/20">
-                                APERÇU GRATUIT
-                              </span>
-                            ) : (
-                              <span className="px-3 py-1 text-white/40 text-xs font-medium">
-                                VERROUILLÉ
-                              </span>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => toggleLessonAccess(module.id, lesson.id)}
-                              className={`
-                                relative w-12 h-6 rounded-full transition-colors
-                                ${isBeforePaywall ? 'bg-green-500' : 'bg-white/[0.12]'}
-                              `}
-                            >
-                              <div
-                                className={`
-                                  absolute top-1 w-4 h-4 bg-white rounded-full transition-transform
-                                  ${isBeforePaywall ? 'translate-x-7' : 'translate-x-1'}
-                                `}
+                          <div className="p-3 bg-[#1A1A1A] rounded-lg space-y-3">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${getLessonIconColor(lesson.type)}`}>
+                                {getLessonIcon(lesson.type)}
+                              </div>
+                              <input
+                                type="text"
+                                value={lesson.title}
+                                onChange={(e) =>
+                                  updateLesson(module.id, lesson.id, { title: e.target.value })
+                                }
+                                className="flex-1 bg-transparent text-white/90 text-sm focus:outline-none"
+                                placeholder={lesson.type === 'VIDEO' ? 'Titre de la leçon vidéo' : lesson.type === 'PDF' ? 'Titre du document' : 'Titre de l\'exercice'}
                               />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => deleteLesson(module.id, lesson.id)}
-                              className="p-2 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                              {isBeforePaywall ? (
+                                <span className="px-3 py-1 bg-[#FF7A00]/15 text-[#FF7A00] text-xs font-medium rounded border border-[#FF7A00]/20">
+                                  APERÇU GRATUIT
+                                </span>
+                              ) : (
+                                <span className="px-3 py-1 text-white/40 text-xs font-medium">
+                                  VERROUILLÉ
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => toggleLessonAccess(module.id, lesson.id)}
+                                className={`
+                                  relative w-12 h-6 rounded-full transition-colors flex-shrink-0
+                                  ${isBeforePaywall ? 'bg-green-500' : 'bg-white/[0.12]'}
+                                `}
+                              >
+                                <div
+                                  className={`
+                                    absolute top-1 w-4 h-4 bg-white rounded-full transition-transform
+                                    ${isBeforePaywall ? 'translate-x-7' : 'translate-x-1'}
+                                  `}
+                                />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteLesson(module.id, lesson.id)}
+                                className="p-2 text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors flex-shrink-0"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                            {/* Lien vidéo pour Leçon vidéo */}
+                            {lesson.type === 'VIDEO' && (
+                              <div className="pl-11">
+                                <label className="block text-xs text-white/50 mb-1">Lien de la vidéo (YouTube, Vimeo, Dailymotion ou lien direct .mp4)</label>
+                                <div className="flex items-center gap-2">
+                                  <LinkIcon className="w-4 h-4 text-white/40 flex-shrink-0" />
+                                  <input
+                                    type="url"
+                                    value={lesson.videoKey ?? ''}
+                                    onChange={(e) =>
+                                      updateLesson(module.id, lesson.id, { videoKey: e.target.value || undefined })
+                                    }
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                    className="flex-1 px-3 py-2 bg-[#0D0D0D] border border-white/[0.08] rounded-lg text-white text-sm placeholder:text-white/30 focus:outline-none focus:border-[#FF7A00]"
+                                  />
+                                </div>
+                                {lesson.videoKey && !/youtube|youtu\.be|vimeo|dailymotion/i.test(lesson.videoKey) && !/\.(mp4|webm|ogg|mov)(\?|$)/i.test(lesson.videoKey) && (
+                                  <p className="text-amber-400 text-xs mt-1 pl-6">⚠ Ce lien ne semble pas être une vidéo YouTube, Vimeo, Dailymotion ou un fichier vidéo direct (.mp4, .webm). Vérifiez l&apos;URL.</p>
+                                )}
+                              </div>
+                            )}
+                            {/* Upload PDF pour Ressource PDF */}
+                            {lesson.type === 'PDF' && (
+                              <div className="pl-11">
+                                <label className="block text-xs text-white/50 mb-1">Fichier PDF</label>
+                                {lesson.pdfKey ? (
+                                  <div className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                    <FileText className="w-4 h-4 text-green-400" />
+                                    <span className="text-sm text-green-400">PDF téléversé</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => updateLesson(module.id, lesson.id, { pdfKey: undefined })}
+                                      className="ml-auto text-xs text-white/60 hover:text-red-400"
+                                    >
+                                      Changer
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <label className="flex items-center gap-2 px-3 py-2 bg-[#0D0D0D] border border-white/[0.08] rounded-lg cursor-pointer hover:border-[#FF7A00]/40 transition-colors">
+                                    <Upload className="w-4 h-4 text-white/40" />
+                                    <span className="text-sm text-white/70">
+                                      {pdfUploadingLessonId === lesson.id ? 'Téléversement...' : 'Choisir un fichier PDF'}
+                                    </span>
+                                    <input
+                                      type="file"
+                                      accept="application/pdf"
+                                      className="hidden"
+                                      disabled={pdfUploadingLessonId === lesson.id}
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) uploadPdf(module.id, lesson.id, file);
+                                        e.target.value = '';
+                                      }}
+                                    />
+                                  </label>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       );

@@ -78,6 +78,29 @@ type Tab = 'description' | 'resources' | 'notes' | 'comments';
 
 const MONTHS = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
 
+function getEmbedUrl(url: string): string | null {
+  // YouTube
+  const ytMatch =
+    url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/) ??
+    url.match(/youtube\.com\/shorts\/([\w-]+)/);
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`;
+
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+
+  // Dailymotion
+  const dmMatch = url.match(/dailymotion\.com\/video\/([\w]+)/);
+  if (dmMatch) return `https://www.dailymotion.com/embed/video/${dmMatch[1]}`;
+
+  return null;
+}
+
+const VIDEO_EXTENSIONS = /\.(mp4|webm|ogg|mov|m4v|avi|mkv)(\?|$)/i;
+function isDirectVideoUrl(url: string): boolean {
+  return VIDEO_EXTENSIONS.test(url);
+}
+
 function fmtTime(s: number) {
   if (isNaN(s)) return '0:00';
   const m = Math.floor(s / 60);
@@ -117,13 +140,14 @@ export default function LearnPage() {
   }, [program, expandedModuleId, activeContentId]);
 
   /* ── Active content ── */
-  const { data: content, isLoading: loadingContent } = useQuery({
+  const { data: content, isLoading: loadingContent, error: contentError } = useQuery({
     queryKey: ['content', activeContentId],
     queryFn: async () => {
       const res = await contentApi.getById(activeContentId!);
       return (res.data?.data ?? res.data) as ContentData;
     },
     enabled: !!activeContentId,
+    retry: 1,
   });
 
   /* ── Progress mutation ── */
@@ -213,6 +237,7 @@ export default function LearnPage() {
               <VideoPlayer
                 content={content}
                 loading={loadingContent}
+                error={contentError}
                 onProgress={(watched, pct) => {
                   progressMutation.mutate({ watchedSeconds: watched, progressPercent: pct });
                 }}
@@ -366,10 +391,12 @@ export default function LearnPage() {
 function VideoPlayer({
   content,
   loading,
+  error,
   onProgress,
 }: {
   content: ContentData | undefined;
   loading: boolean;
+  error?: unknown;
   onProgress: (watchedSeconds: number, progressPercent: number) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -432,6 +459,14 @@ function VideoPlayer({
     if (isPlaying) video.pause(); else video.play();
   };
 
+  if (error) {
+    return (
+      <div className="relative bg-[#181818] border-b border-white/10 overflow-hidden flex items-center justify-center" style={{ aspectRatio: '16 / 9' }}>
+        <p className="text-red-400 text-sm">Erreur de chargement du contenu. Veuillez réessayer.</p>
+      </div>
+    );
+  }
+
   if (loading || !content) {
     return (
       <div className="relative bg-[#181818] border-b border-white/10 overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
@@ -451,9 +486,43 @@ function VideoPlayer({
           <div className="absolute inset-0 bg-gradient-to-br from-[#9333EA]/30 to-landing-orange/30" />
         )}
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <div className="w-[72px] h-[72px] rounded-full bg-landing-orange flex items-center justify-center">
-            <Play size={32} className="text-white ml-1 fill-white" />
-          </div>
+          <p className="text-white/60 text-sm">Aucune vidéo disponible pour cette leçon</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Detect embeddable URLs (YouTube, Vimeo, Dailymotion)
+  const embedUrl = getEmbedUrl(content.videoUrl);
+  if (embedUrl) {
+    return (
+      <div className="relative bg-black border-b border-white/10 overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
+        <iframe
+          src={embedUrl}
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          title={content.title}
+        />
+      </div>
+    );
+  }
+
+  // URL is not embeddable and not a direct video file — show helpful message
+  if (!isDirectVideoUrl(content.videoUrl)) {
+    return (
+      <div className="relative bg-[#181818] border-b border-white/10 overflow-hidden flex flex-col items-center justify-center gap-3" style={{ aspectRatio: '16 / 9' }}>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#9333EA]/20 to-landing-orange/20" />
+        <div className="relative z-10 flex flex-col items-center gap-2 px-6 text-center">
+          <p className="text-white/70 text-sm font-medium">Le lien vidéo enregistré n&apos;est pas un format reconnu</p>
+          <a
+            href={content.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-landing-orange hover:underline text-sm"
+          >
+            Ouvrir le lien dans un nouvel onglet &rarr;
+          </a>
         </div>
       </div>
     );

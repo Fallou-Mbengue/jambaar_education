@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MinioService } from '../../minio/minio.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -338,7 +338,12 @@ export class ProgramsService {
             lessonDto.type === 'PDF' || lessonDto.type === 'EXERCISE' ? 'ARTICLE' :
             'ARTICLE';
 
-          // Create content
+          // Create content: videoKey = URL or key for VIDEO; articleBody = pdfKey for PDF or exerciseBody for EXERCISE
+          const articleBody =
+            lessonDto.type === 'PDF' && lessonDto.pdfKey
+              ? JSON.stringify({ pdfKey: lessonDto.pdfKey })
+              : lessonDto.exerciseBody ?? null;
+
           const content = await this.prisma.content.create({
             data: {
               title: lessonDto.title,
@@ -346,8 +351,8 @@ export class ProgramsService {
               type: contentType,
               status: 'DRAFT',
               durationSeconds: lessonDto.durationSeconds,
-              videoKey: lessonDto.videoKey,
-              articleBody: lessonDto.exerciseBody,
+              videoKey: lessonDto.videoKey ?? null,
+              articleBody,
               isPremium: !isFreePreview,
               tags: programTags,
             },
@@ -467,16 +472,60 @@ export class ProgramsService {
   async deleteDraft(programId: string) {
     const program = await this.prisma.program.findUnique({
       where: { id: programId },
-      select: { status: true },
+      include: {
+        modules: {
+          select: {
+            id: true,
+            courseId: true,
+            course: {
+              select: {
+                modules: { select: { id: true, contentId: true } },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!program) throw new NotFoundException('Program not found');
-    if (program.status === 'ACTIVE') {
-      throw new Error('Cannot delete published program');
-    }
 
-    return this.prisma.program.delete({
-      where: { id: programId },
+    const courseIds = program.modules.map((m) => m.courseId);
+    const contentIds = program.modules.flatMap((m) =>
+      m.course.modules.map((cm) => cm.contentId),
+    );
+    const courseModuleIds = program.modules.flatMap((m) =>
+      m.course.modules.map((cm) => cm.id),
+    );
+
+    await this.prisma.$transaction(async (tx) => {
+      if (contentIds.length > 0) {
+        await tx.userProgress.deleteMany({ where: { contentId: { in: contentIds } } });
+        await tx.like.deleteMany({ where: { contentId: { in: contentIds } } });
+        await tx.save.deleteMany({ where: { contentId: { in: contentIds } } });
+        await tx.shareLog.deleteMany({ where: { contentId: { in: contentIds } } });
+        await tx.recommendationLog.deleteMany({ where: { contentId: { in: contentIds } } });
+        await tx.adminContentAudit.deleteMany({ where: { contentId: { in: contentIds } } });
+      }
+
+      await tx.userProgress.deleteMany({ where: { programId } });
+
+      if (courseModuleIds.length > 0) {
+        await tx.module.deleteMany({ where: { id: { in: courseModuleIds } } });
+      }
+
+      if (contentIds.length > 0) {
+        await tx.content.deleteMany({ where: { id: { in: contentIds } } });
+      }
+
+      await tx.programModule.deleteMany({ where: { programId } });
+
+      if (courseIds.length > 0) {
+        await tx.course.deleteMany({ where: { id: { in: courseIds } } });
+      }
+
+      await tx.program.delete({ where: { id: programId } });
     });
+
+    return { deleted: true };
   }
 }

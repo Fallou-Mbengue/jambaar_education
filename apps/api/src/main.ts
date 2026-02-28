@@ -10,7 +10,11 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true, bodyParser: false });
+  const express = await import('express');
+  app.use(express.json({ limit: '50mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+  app.use(express.raw({ type: ['image/*', 'video/*', 'application/octet-stream'], limit: '50mb' }));
   const config = app.get(ConfigService);
 
   app.use(helmet());

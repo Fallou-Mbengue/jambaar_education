@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { Bold, Italic, AlignLeft, Link as LinkIcon, Upload } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
+import { Bold, Italic, AlignLeft, Link as LinkIcon, Upload, Loader2 } from 'lucide-react';
+import apiClient from '@/lib/api/client';
 import { ProgramFormData } from '../page';
 
 interface StepOneProps {
@@ -30,6 +31,17 @@ export default function StepOne({ data, onUpdate, onNext, onBack }: StepOneProps
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadPhase, setUploadPhase] = useState<'presign' | 'upload' | 'confirm' | null>(null);
+  const [uploadPreviewUrl, setUploadPreviewUrl] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Restaurer l'image quand on revient à l'étape 1 (data.thumbnailKey est conservé par le parent)
+  useEffect(() => {
+    if (data.thumbnailKey && !uploadedImage && !uploadPreviewUrl && !isUploading) {
+      setUploadedImage(`/api/v1/upload/local/${encodeURIComponent(data.thumbnailKey)}`);
+    }
+  }, [data.thumbnailKey, uploadedImage, uploadPreviewUrl, isUploading]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -60,49 +72,98 @@ export default function StepOne({ data, onUpdate, onNext, onBack }: StepOneProps
 
   const uploadImage = async (file: File) => {
     setIsUploading(true);
+    setUploadError(null);
+    setUploadProgress(0);
+    setUploadPhase('presign');
+    const preview = URL.createObjectURL(file);
+    setUploadPreviewUrl(preview);
+
     try {
-      // Get presigned URL
-      const presignRes = await fetch('/api/upload/presign', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
-          prefix: 'programs',
-        }),
+      // Phase 1: Obtenir l'URL de téléversement
+      const presignRes = await apiClient.post('/upload/presign', {
+        filename: file.name,
+        contentType: file.type,
+        prefix: 'programs',
       });
 
-      if (!presignRes.ok) throw new Error('Failed to get upload URL');
+      const { presignedUrl, objectKey } = presignRes.data.data as {
+        presignedUrl: string;
+        objectKey: string;
+      };
 
-      const { uploadUrl, objectKey } = await presignRes.json();
+      setUploadPhase('upload');
 
-      // Upload to MinIO
-      const uploadRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file,
+      // Phase 2: Envoi du fichier avec suivi de progression
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            setUploadProgress(pct);
+          }
+        });
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) resolve();
+          else reject(new Error(`Upload failed: ${xhr.status}`));
+        });
+        xhr.addEventListener('error', () => reject(new Error('Upload failed')));
+        xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+
+        // Utiliser l'URL complète pour éviter les problèmes de résolution
+        const uploadUrl = presignedUrl.startsWith('http') ? presignedUrl : `${window.location.origin}${presignedUrl}`;
+        xhr.open('PUT', uploadUrl);
+        xhr.setRequestHeader('Content-Type', file.type);
+        xhr.withCredentials = true;
+        xhr.send(file);
       });
 
-      if (!uploadRes.ok) throw new Error('Failed to upload file');
+      setUploadPhase('confirm');
+      setUploadProgress(100);
 
-      // Confirm upload
-      const confirmRes = await fetch('/api/upload/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ objectKey }),
-      });
+      // Phase 3: Confirmer et obtenir l'URL de lecture (avec timeout pour éviter blocage)
+      const confirmWithTimeout = Promise.race([
+        apiClient.post('/upload/confirm', { objectKey }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('La confirmation a pris trop de temps. Réessayez.')), 15000),
+        ),
+      ]);
 
-      if (!confirmRes.ok) throw new Error('Failed to confirm upload');
+      const confirmRes = (await confirmWithTimeout) as { data?: { data?: unknown } };
+      const confirmData = confirmRes?.data?.data ?? confirmRes?.data ?? confirmRes;
+      const payload = (confirmData as { valid?: boolean; readUrl?: string; message?: string }) ?? {};
 
-      const { readUrl } = await confirmRes.json();
+      if (payload.valid === false && payload.message) {
+        throw new Error(payload.message);
+      }
+
+      // Utiliser readUrl de l'API ou construire l'URL pour le mode local
+      const readUrl =
+        payload.readUrl ||
+        `/api/v1/upload/local/${encodeURIComponent(objectKey)}`;
 
       setUploadedImage(readUrl);
       onUpdate({ thumbnailKey: objectKey });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      alert('Erreur lors du téléchargement de l\'image');
+      const isConnectionError =
+        error?.response?.status === 500 ||
+        error?.code === 'ECONNREFUSED' ||
+        error?.message?.includes('ECONNREFUSED');
+      if (isConnectionError) {
+        setUploadError(
+          'Le service de stockage (MinIO) n\'est pas disponible. Lancez Docker Desktop puis "docker compose up -d minio". Vous pouvez continuer sans image.',
+        );
+      } else {
+        setUploadError("Erreur lors du téléchargement de l'image. Réessayez.");
+      }
     } finally {
+      setUploadPreviewUrl(null);
+      URL.revokeObjectURL(preview);
       setIsUploading(false);
+      setUploadProgress(0);
+      setUploadPhase(null);
     }
   };
 
@@ -241,34 +302,36 @@ export default function StepOne({ data, onUpdate, onNext, onBack }: StepOneProps
                 }
               `}
             >
-              {uploadedImage ? (
+              {uploadedImage || uploadPreviewUrl ? (
                 <div className="relative">
                   <img
-                    src={uploadedImage}
+                    src={uploadedImage ?? uploadPreviewUrl ?? ''}
                     alt="Preview"
-                    className="w-full h-64 object-cover"
+                    className="w-full min-h-[420px] h-[420px] object-cover"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUploadedImage(null);
-                      onUpdate({ thumbnailKey: undefined });
-                    }}
-                    className="absolute top-4 right-4 px-4 py-2 bg-red-500/90 hover:bg-red-500 text-white rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Supprimer
-                  </button>
+                  {!isUploading && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUploadedImage(null);
+                        onUpdate({ thumbnailKey: undefined });
+                      }}
+                      className="absolute top-4 right-4 px-4 py-2 bg-red-500/90 hover:bg-red-500 text-white rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Supprimer
+                    </button>
+                  )}
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center py-16 cursor-pointer">
-                  <div className="w-16 h-16 rounded-full bg-[#FF7A00]/15 flex items-center justify-center mb-4">
-                    <Upload className="w-8 h-8 text-[#FF7A00]" />
+                <label className="flex flex-col items-center justify-center min-h-[420px] py-24 cursor-pointer">
+                  <div className="w-20 h-20 rounded-full bg-[#FF7A00]/15 flex items-center justify-center mb-5">
+                    <Upload className="w-10 h-10 text-[#FF7A00]" />
                   </div>
-                  <p className="text-white/80 font-medium mb-1">
+                  <p className="text-white/80 font-medium mb-1 text-base">
                     Cliquez pour téléverser ou glissez-déposez
                   </p>
                   <p className="text-white/40 text-sm">
-                    PNG, JPG ou WEBP (Max. 5MB - 1280x720 recommandé)
+                    PNG, JPG ou WEBP — zone agrandie (recommandé 1280×720 ou plus)
                   </p>
                   <input
                     type="file"
@@ -280,11 +343,25 @@ export default function StepOne({ data, onUpdate, onNext, onBack }: StepOneProps
                 </label>
               )}
               {isUploading && (
-                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                  <div className="text-white text-sm">Téléchargement...</div>
+                <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-4 z-10">
+                  <Loader2 className="w-12 h-12 text-[#FF7A00] animate-spin" />
+                  <div className="text-white font-medium text-center">
+                    {uploadPhase === 'presign' && 'Préparation de l\'envoi...'}
+                    {uploadPhase === 'upload' && `Envoi en cours... ${uploadProgress}%`}
+                    {uploadPhase === 'confirm' && 'Finalisation...'}
+                  </div>
+                  <div className="w-3/4 max-w-xs h-2 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#FF7A00] transition-all duration-300 ease-out"
+                      style={{ width: uploadPhase === 'presign' ? '20%' : uploadPhase === 'confirm' ? '100%' : `${uploadProgress}%` }}
+                    />
+                  </div>
                 </div>
               )}
             </div>
+            {uploadError && (
+              <p className="mt-2 text-sm text-red-400">{uploadError}</p>
+            )}
           </div>
         </div>
       </div>

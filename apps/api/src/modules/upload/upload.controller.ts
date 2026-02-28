@@ -1,8 +1,12 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Put, Get, Body, Param, Req, Res, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { IsString, IsOptional } from 'class-validator';
 import { MinioService } from '../../minio/minio.service';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { Public } from '../../common/decorators/public.decorator';
+import { Request, Response } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
 
 class PresignDto {
   @IsString()
@@ -44,5 +48,73 @@ export class UploadController {
     }
     const readUrl = await this.minio.getPresignedReadUrl(dto.objectKey);
     return { valid: true, objectKey: dto.objectKey, readUrl };
+  }
+
+  @Put('local/:objectKey(*)')
+  @Public()
+  @ApiOperation({ summary: 'Local file upload (dev fallback when MinIO is unavailable)' })
+  async localUpload(
+    @Param('objectKey') objectKey: string,
+    @Req() req: Request,
+  ) {
+    if (!this.minio.isLocalMode()) {
+      throw new HttpException('Local upload not available', HttpStatus.NOT_FOUND);
+    }
+
+    const decoded = decodeURIComponent(objectKey);
+    const filePath = path.join(this.minio.getLocalDir(), decoded);
+    const dir = path.dirname(filePath);
+    fs.mkdirSync(dir, { recursive: true });
+
+    return new Promise<{ ok: true }>((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      req.on('data', (chunk: Buffer) => chunks.push(chunk));
+      req.on('end', () => {
+        try {
+          fs.writeFileSync(filePath, Buffer.concat(chunks));
+          resolve({ ok: true });
+        } catch (err) {
+          reject(new HttpException('Failed to write file', HttpStatus.INTERNAL_SERVER_ERROR));
+        }
+      });
+      req.on('error', () =>
+        reject(new HttpException('Upload stream error', HttpStatus.INTERNAL_SERVER_ERROR)),
+      );
+    });
+  }
+
+  @Get('local/:objectKey(*)')
+  @Public()
+  @ApiOperation({ summary: 'Serve locally stored file (dev fallback)' })
+  async localRead(
+    @Param('objectKey') objectKey: string,
+    @Res() res: Response,
+  ) {
+    if (!this.minio.isLocalMode()) {
+      throw new HttpException('Local storage not available', HttpStatus.NOT_FOUND);
+    }
+
+    const decoded = decodeURIComponent(objectKey);
+    const filePath = path.join(this.minio.getLocalDir(), decoded);
+    if (!fs.existsSync(filePath)) {
+      throw new HttpException('File not found', HttpStatus.NOT_FOUND);
+    }
+
+    const ext = path.extname(filePath).toLowerCase();
+    const mimeTypes: Record<string, string> = {
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+      '.svg': 'image/svg+xml',
+      '.mp4': 'video/mp4',
+      '.pdf': 'application/pdf',
+    };
+
+    res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    const stream = fs.createReadStream(filePath);
+    stream.pipe(res);
   }
 }
