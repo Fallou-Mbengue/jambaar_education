@@ -4,6 +4,7 @@ import { ContentService } from './content.service';
 import { CreateContentDto, UpdateContentDto, UpdateProgressDto } from './dto/content.dto';
 import { CurrentUser, JwtPayload } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 
 @ApiTags('content')
 @ApiBearerAuth()
@@ -18,9 +19,10 @@ export class ContentController {
   }
 
   @Get(':id')
+  @Public() // TEMP: Allow unauthenticated content access for development
   @ApiOperation({ summary: 'Get content by ID' })
-  findById(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
-    return this.contentService.findById(id, user.sub);
+  findById(@Param('id') id: string, @CurrentUser() user?: JwtPayload) {
+    return this.contentService.findById(id, user?.sub);
   }
 
   @Post(':id/progress')

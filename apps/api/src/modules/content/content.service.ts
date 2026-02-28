@@ -12,7 +12,7 @@ export class ContentService {
     private eventEmitter: EventEmitter2,
   ) {}
 
-  async findById(contentId: string, userId: string) {
+  async findById(contentId: string, userId?: string) {
     const content = await this.prisma.content.findUnique({
       where: { id: contentId },
       include: {
@@ -21,7 +21,8 @@ export class ContentService {
     });
     if (!content) throw new NotFoundException('Content not found');
 
-    const [userProgress, isLiked, isSaved] = await Promise.all([
+    // Only fetch user-specific data if userId is provided
+    const [userProgress, isLiked, isSaved] = userId ? await Promise.all([
       this.prisma.userProgress.findUnique({
         where: { userId_contentId: { userId, contentId } },
       }),
@@ -31,7 +32,7 @@ export class ContentService {
       this.prisma.save.findUnique({
         where: { userId_contentId: { userId, contentId } },
       }),
-    ]);
+    ]) : [null, null, null];
 
     // Track view
     await this.prisma.content.update({
@@ -39,11 +40,13 @@ export class ContentService {
       data: { viewCount: { increment: 1 } },
     });
 
-    this.eventEmitter.emit('analytics.track', {
-      userId,
-      eventName: 'content_viewed',
-      properties: { contentId, type: content.type },
-    });
+    if (userId) {
+      this.eventEmitter.emit('analytics.track', {
+        userId,
+        eventName: 'content_viewed',
+        properties: { contentId, type: content.type },
+      });
+    }
 
     const thumbnailUrl = content.thumbnailKey
       ? await this.minio.getPresignedReadUrl(content.thumbnailKey)
