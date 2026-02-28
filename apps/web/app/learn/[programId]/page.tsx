@@ -84,7 +84,17 @@ function getEmbedUrl(url: string): string | null {
   const ytMatch =
     url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/) ??
     url.match(/youtube\.com\/shorts\/([\w-]+)/);
-  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?rel=0`;
+  if (ytMatch) {
+    // Paramètres pour contourner l'erreur 153 et améliorer la compatibilité
+    const params = [
+      'rel=0',              // Ne pas afficher de vidéos similaires
+      'modestbranding=1',   // Masquer le logo YouTube
+      'enablejsapi=1',      // Activer l'API JavaScript
+      'origin=' + (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'),
+      'widget_referrer=' + (typeof window !== 'undefined' ? window.location.href : ''),
+    ].join('&');
+    return `https://www.youtube.com/embed/${ytMatch[1]}?${params}`;
+  }
 
   // Vimeo
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
@@ -503,7 +513,68 @@ function VideoPlayer({
   // Detect embeddable URLs (YouTube, Vimeo, Dailymotion)
   const embedUrl = getEmbedUrl(videoUrl);
   if (embedUrl) {
-    // Utiliser youtube-nocookie.com pour YouTube (peut éviter certains blocages Erreur 153 sur localhost)
+    // Pour YouTube : sur localhost, afficher une interface alternative élégante au lieu de l'iframe
+    // qui provoque souvent l'Erreur 153 (YouTube bloque l'embedding sur localhost)
+    const isYouTube = embedUrl.includes('youtube');
+    const isLocalhost = typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+    if (isYouTube && isLocalhost) {
+      // Interface alternative pour YouTube sur localhost
+      const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+      const videoId = ytMatch?.[1];
+      const thumbnailUrl = videoId
+        ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+        : content.thumbnailUrl;
+
+      return (
+        <div className="relative bg-black border-b border-white/10 overflow-hidden group cursor-pointer" style={{ aspectRatio: '16 / 9' }}>
+          {/* Thumbnail */}
+          {thumbnailUrl && (
+            <img
+              src={thumbnailUrl}
+              alt={content.title}
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to hqdefault if maxresdefault fails
+                const img = e.target as HTMLImageElement;
+                if (img.src.includes('maxresdefault')) {
+                  img.src = img.src.replace('maxresdefault', 'hqdefault');
+                }
+              }}
+            />
+          )}
+
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 group-hover:from-black/90 transition-all" />
+
+          {/* Play button + info */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8">
+            <div className="w-20 h-20 rounded-full bg-red-600 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+              <Play size={36} className="text-white ml-1 fill-white" />
+            </div>
+            <div className="text-center space-y-2">
+              <p className="text-white text-lg font-semibold">{content.title}</p>
+              <p className="text-white/70 text-sm max-w-md">
+                YouTube bloque l'intégration vidéo sur localhost. Cliquez pour regarder la vidéo sur YouTube.
+              </p>
+            </div>
+            <a
+              href={videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2 shadow-lg group-hover:shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Play size={18} className="fill-white" />
+              Regarder sur YouTube
+            </a>
+          </div>
+        </div>
+      );
+    }
+
+    // Pour les autres vidéos (Vimeo, Dailymotion) ou YouTube en production : utiliser l'iframe
     const safeEmbedUrl = embedUrl.includes('youtube.com/embed/')
       ? embedUrl.replace('youtube.com/embed/', 'youtube-nocookie.com/embed/')
       : embedUrl;
@@ -518,14 +589,6 @@ function VideoPlayer({
           referrerPolicy="no-referrer"
           loading="eager"
         />
-        <a
-          href={videoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/70 hover:bg-black/90 text-white/90 text-xs font-medium rounded-lg transition-colors flex items-center gap-2"
-        >
-          Regarder sur YouTube ↗
-        </a>
       </div>
     );
   }
