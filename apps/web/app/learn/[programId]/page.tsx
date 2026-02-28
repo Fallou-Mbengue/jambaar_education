@@ -65,6 +65,7 @@ interface ContentData {
   description: string | null;
   type: string;
   videoUrl: string | null;
+  videoKey?: string | null;
   thumbnailUrl: string | null;
   durationSeconds: number | null;
   tags: string[];
@@ -477,7 +478,14 @@ function VideoPlayer({
     );
   }
 
-  if (!content.videoUrl) {
+  // videoUrl peut venir de l'API ou de videoKey si c'est déjà une URL (YouTube, etc.)
+  const videoUrl =
+    content.videoUrl ??
+    (content.videoKey && (content.videoKey.startsWith('http://') || content.videoKey.startsWith('https://'))
+      ? content.videoKey
+      : null);
+
+  if (!videoUrl) {
     return (
       <div className="relative bg-[#181818] border-b border-white/10 overflow-hidden flex items-center justify-center" style={{ aspectRatio: '16 / 9' }}>
         {content.thumbnailUrl ? (
@@ -493,30 +501,44 @@ function VideoPlayer({
   }
 
   // Detect embeddable URLs (YouTube, Vimeo, Dailymotion)
-  const embedUrl = getEmbedUrl(content.videoUrl);
+  const embedUrl = getEmbedUrl(videoUrl);
   if (embedUrl) {
+    // Utiliser youtube-nocookie.com pour YouTube (peut éviter certains blocages Erreur 153 sur localhost)
+    const safeEmbedUrl = embedUrl.includes('youtube.com/embed/')
+      ? embedUrl.replace('youtube.com/embed/', 'youtube-nocookie.com/embed/')
+      : embedUrl;
     return (
       <div className="relative bg-black border-b border-white/10 overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
         <iframe
-          src={embedUrl}
-          className="w-full h-full"
+          src={safeEmbedUrl}
+          className="w-full h-full min-h-[300px]"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
           title={content.title}
+          referrerPolicy="no-referrer"
+          loading="eager"
         />
+        <a
+          href={videoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-3 right-3 px-3 py-1.5 bg-black/70 hover:bg-black/90 text-white/90 text-xs font-medium rounded-lg transition-colors flex items-center gap-2"
+        >
+          Regarder sur YouTube ↗
+        </a>
       </div>
     );
   }
 
   // URL is not embeddable and not a direct video file — show helpful message
-  if (!isDirectVideoUrl(content.videoUrl)) {
+  if (!isDirectVideoUrl(videoUrl)) {
     return (
       <div className="relative bg-[#181818] border-b border-white/10 overflow-hidden flex flex-col items-center justify-center gap-3" style={{ aspectRatio: '16 / 9' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-[#9333EA]/20 to-landing-orange/20" />
         <div className="relative z-10 flex flex-col items-center gap-2 px-6 text-center">
           <p className="text-white/70 text-sm font-medium">Le lien vidéo enregistré n&apos;est pas un format reconnu</p>
           <a
-            href={content.videoUrl}
+            href={videoUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-landing-orange hover:underline text-sm"
@@ -537,7 +559,7 @@ function VideoPlayer({
     >
       <video
         ref={videoRef}
-        src={content.videoUrl}
+        src={videoUrl}
         className="w-full h-full object-contain"
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
