@@ -4,7 +4,6 @@ import {
   LandingHeader,
   HeroSection,
   ExplorePathsSection,
-  FormationsSection,
   WhyJambaar,
   CoachesSection,
   FreePathsSection,
@@ -17,11 +16,9 @@ export default function LandingPage() {
       <LandingHeader />
       <main>
         <HeroSection />
-        <ExplorePathsSection />
-        <FormationsSection />
+        <FreePathsSection />
         <WhyJambaar />
         <CoachesSection />
-        <FreePathsSection />
       </main>
       <LandingFooter />
     </div>

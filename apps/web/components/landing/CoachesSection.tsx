@@ -1,26 +1,30 @@
 'use client';
 
+import Image from 'next/image';
 import { HelpCircle } from 'lucide-react';
 
 const COACHES = [
-  { name: 'Awa Diop', role: 'Coach et Expert en Développement de Carrière' },
+  { name: 'Ndéye Maty Diop', role: 'CEO Jambaar & Consulante Manager', image: '/images/coaches/ndeye-maty-diop.png' },
   { name: 'Maimouna Ndiaye', role: 'Experte en Leadership et Communication' },
   { name: 'Dr. Aida Sy', role: 'Coach Stratégie et Management' },
   { name: 'Prof. Khadija Diallo', role: 'Experte en Transformation Digitale' },
 ];
 
-function CoachCard({ name, role }: { name: string; role: string }) {
+function CoachCard({ name, role, image }: { name: string; role: string; image?: string }) {
   return (
     <article className="rounded-xl overflow-hidden bg-white/5 border border-white/10 flex flex-col">
-      <div className="relative aspect-[3/4] min-h-[240px] bg-gradient-to-br from-[#3B82F6] via-[#9333EA] to-landing-orange">
+      <div className="relative aspect-[3/4] min-h-[240px] bg-gradient-to-br from-[#3B82F6] via-[#9333EA] to-landing-orange overflow-hidden">
+        {image ? (
+          <Image
+            src={image}
+            alt={name}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          />
+        ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
         <div className="absolute top-3 left-3 text-white/90 text-sm font-semibold">Jambaar.</div>
-        <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-[#9333EA]/90 flex items-center justify-center">
-          <HelpCircle size={18} className="text-white" />
-        </div>
-        <div className="absolute bottom-3 left-3">
-          <span className="px-2.5 py-1 rounded bg-landing-orange text-white text-xs font-bold">NOUVEAU</span>
-        </div>
       </div>
       <div className="p-4 flex-1">
         <h3 className="font-bold text-white text-lg">{name}</h3>
@@ -43,7 +47,7 @@ export function CoachesSection() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {COACHES.map((c) => (
-            <CoachCard key={c.name} name={c.name} role={c.role} />
+            <CoachCard key={c.name} name={c.name} role={c.role} image={c.image} />
           ))}
         </div>
       </div>

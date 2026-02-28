@@ -28,9 +28,20 @@ export function WebShell({ children }: WebShellProps) {
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const [sidebarCompact, setSidebarCompact] = useState(false);
 
+  const isOnboarding = pathname === '/onboarding';
   const showPanel = !NO_PANEL_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(route + '/'),
   );
+
+  if (isOnboarding) {
+    return (
+      <div className="min-h-screen bg-[#0D0D0D] flex flex-col">
+        <main className="flex-1 flex items-center justify-center p-4">
+          {children}
+        </main>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -51,14 +51,14 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg p-4 flex flex-col max-w-lg mx-auto">
+    <div className="w-full max-w-lg bg-[#0D0D0D] p-4 flex flex-col">
       {/* Progress */}
       <div className="flex gap-2 mb-8 mt-4">
         {[1, 2, 3].map((s) => (
           <div
             key={s}
             className={`h-1 flex-1 rounded-full transition-colors ${
-              s <= step ? 'bg-brand-orange' : 'bg-white/10'
+              s <= step ? 'bg-[#FF7A00]' : 'bg-white/10'
             }`}
           />
         ))}
@@ -66,17 +66,17 @@ export default function OnboardingPage() {
 
       {step === 1 && (
         <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-2">Quel est ton objectif ?</h1>
-          <p className="text-dark-text mb-6">Sélectionne ce qui te correspond le mieux.</p>
+          <h1 className="text-2xl font-bold mb-2 text-white">Quel est ton objectif ?</h1>
+          <p className="text-white/80 mb-6">Sélectionne ce qui te correspond le mieux.</p>
           <div className="space-y-3">
             {OBJECTIVES.map((obj) => (
               <button
                 key={obj.value}
                 onClick={() => toggleObjective(obj.value)}
-                className={`w-full text-left px-4 py-4 rounded-xl border transition-all ${
+                className={`w-full text-left px-4 py-4 rounded-xl border transition-all text-white ${
                   objectives.includes(obj.value)
-                    ? 'border-brand-orange bg-brand-orange/10 text-dark-text'
-                    : 'border-white/10 bg-white/5 text-dark-text hover:border-white/30'
+                    ? 'border-[#FF7A00] bg-[#FF7A00]/10'
+                    : 'border-white/10 bg-white/5 hover:border-white/30'
                 }`}
               >
                 {obj.label}
@@ -88,23 +88,23 @@ export default function OnboardingPage() {
 
       {step === 2 && (
         <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-2">Ton niveau actuel ?</h1>
-          <p className="text-dark-text mb-6">Pour personnaliser ton parcours.</p>
+          <h1 className="text-2xl font-bold mb-2 text-white">Ton niveau actuel ?</h1>
+          <p className="text-white/80 mb-6">Pour personnaliser ton parcours.</p>
           <div className="space-y-3">
             {LEVELS.map((lvl) => (
               <button
                 key={lvl.value}
                 onClick={() => setLevel(lvl.value)}
-                className={`w-full text-left px-4 py-4 rounded-xl border transition-all flex items-center gap-4 ${
+                className={`w-full text-left px-4 py-4 rounded-xl border transition-all flex items-center gap-4 text-white ${
                   level === lvl.value
-                    ? 'border-brand-orange bg-brand-orange/10'
+                    ? 'border-[#FF7A00] bg-[#FF7A00]/10'
                     : 'border-white/10 bg-white/5 hover:border-white/30'
                 }`}
               >
                 <span className="text-2xl">{lvl.icon}</span>
                 <div>
-                  <div className="font-semibold text-dark-text">{lvl.label}</div>
-                  <div className="text-sm text-dark-text">{lvl.desc}</div>
+                  <div className="font-semibold">{lvl.label}</div>
+                  <div className="text-sm text-white/70">{lvl.desc}</div>
                 </div>
               </button>
             ))}
@@ -114,8 +114,8 @@ export default function OnboardingPage() {
 
       {step === 3 && (
         <div className="flex-1">
-          <h1 className="text-2xl font-bold mb-2">Tes centres d&apos;intérêt</h1>
-          <p className="text-dark-text mb-6">Choisis au moins 2 domaines à explorer.</p>
+          <h1 className="text-2xl font-bold mb-2 text-white">Tes centres d&apos;intérêt</h1>
+          <p className="text-white/80 mb-6">Choisis au moins 2 domaines à explorer.</p>
           <div className="grid grid-cols-2 gap-3">
             {INTERESTS.map((interest) => (
               <button
@@ -123,8 +123,8 @@ export default function OnboardingPage() {
                 onClick={() => toggleInterest(interest.value)}
                 className={`px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
                   interests.includes(interest.value)
-                    ? 'border-brand-orange bg-brand-orange/10 text-brand-orange'
-                    : 'border-white/10 bg-white/5 text-dark-text hover:border-white/30 hover:text-dark-text'
+                    ? 'border-[#FF7A00] bg-[#FF7A00]/10 text-[#FF7A00]'
+                    : 'border-white/10 bg-white/5 text-white hover:border-white/30'
                 }`}
               >
                 {interest.label}
@@ -139,7 +139,7 @@ export default function OnboardingPage() {
         {step > 1 && (
           <button
             onClick={() => setStep((s) => s - 1)}
-            className="flex-1 py-3 rounded-xl border border-white/10 text-dark-text"
+            className="flex-1 py-3 rounded-xl border border-white/10 text-white hover:bg-white/5 transition-colors"
           >
             Retour
           </button>
@@ -161,7 +161,7 @@ export default function OnboardingPage() {
             (step === 3 && interests.length < 1) ||
             loading
           }
-          className="flex-1 bg-brand-orange hover:bg-brand-orange-dark disabled:opacity-40 text-dark-text font-semibold py-3 rounded-xl transition-colors"
+          className="flex-1 bg-[#FF7A00] hover:bg-[#E86E00] disabled:opacity-40 text-white font-semibold py-3 rounded-xl transition-colors"
         >
           {step === 3 ? (loading ? 'Chargement...' : 'Commencer 🚀') : 'Continuer'}
         </button>
