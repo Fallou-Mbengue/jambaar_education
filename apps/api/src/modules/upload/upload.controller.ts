@@ -1,4 +1,4 @@
-import { Controller, Post, Put, Get, Body, Param, Req, Res, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Put, Get, Body, Param, Req, Res, HttpException, HttpStatus, UseInterceptors, UploadedFile, RawBodyRequest } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { IsString, IsOptional } from 'class-validator';
 import { MinioService } from '../../minio/minio.service';
@@ -56,7 +56,6 @@ export class UploadController {
   async localUpload(
     @Param('objectKey') objectKey: string,
     @Req() req: Request,
-    @Res() res: Response,
   ) {
     if (!this.minio.isLocalMode()) {
       throw new HttpException('Local upload not available', HttpStatus.NOT_FOUND);
@@ -65,30 +64,26 @@ export class UploadController {
     const decoded = decodeURIComponent(objectKey);
     const filePath = path.join(this.minio.getLocalDir(), decoded);
     const dir = path.dirname(filePath);
+
+    // Create directory if it doesn't exist
     fs.mkdirSync(dir, { recursive: true });
 
-    return new Promise<void>((resolve, reject) => {
-      const chunks: Buffer[] = [];
+    try {
+      // Get buffer from body (express.raw() stores it in req.body as Buffer)
+      const buffer = req.body as Buffer;
 
-      req.on('data', (chunk: Buffer) => chunks.push(chunk));
+      if (!buffer || !Buffer.isBuffer(buffer)) {
+        throw new HttpException('No file data received', HttpStatus.BAD_REQUEST);
+      }
 
-      req.on('end', () => {
-        try {
-          const buffer = Buffer.concat(chunks);
-          fs.writeFileSync(filePath, buffer);
-          res.status(200).json({ ok: true });
-          resolve();
-        } catch (err) {
-          res.status(500).json({ error: 'Failed to write file' });
-          reject(err);
-        }
-      });
+      // Write file to disk
+      fs.writeFileSync(filePath, buffer);
 
-      req.on('error', (err) => {
-        res.status(500).json({ error: 'Upload stream error' });
-        reject(err);
-      });
-    });
+      return { ok: true };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to write file';
+      throw new HttpException(message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Get('local/:objectKey(*)')
